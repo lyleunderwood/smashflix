@@ -1,0 +1,45 @@
+-- private methods are local functions here
+
+-- class boilerplate stuff
+Rig = {}
+
+local function fieldChangedListener(self, key, value)
+  getmetatable(self).__object[key] = value
+  self = getmetatable(self).__object
+
+  -- add property setters here
+end
+
+
+local function fieldAccessListener(self, key)
+    local object = getmetatable(self).__object
+
+  -- add property getters here
+
+    return getmetatable(self).__object[key]
+end
+
+function Rig:new(o)
+  local tab = Rig:innerNew(o)
+  local proxy = setmetatable({}, {__newindex = fieldChangedListener, __index = fieldAccessListener, __object = tab})
+
+  return proxy, tab
+end
+
+function Rig:innerNew(o)
+  o = o or {
+    -- property defaults
+  }
+
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+-- instance methods
+
+function Rig:test()
+  print("test")
+end
+
+return Rig
