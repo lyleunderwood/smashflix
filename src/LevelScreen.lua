@@ -37,6 +37,8 @@ end
 function LevelScreen:innerNew(o)
   o = o or {
     -- property defaults
+    layers = nil,
+    level = nil
   }
 
   setmetatable(o, self)
@@ -45,6 +47,29 @@ function LevelScreen:innerNew(o)
 end
 
 -- instance methods
+
+function LevelScreen:runLevel(key)
+  self:stopLevel()
+  self.level = ResourceManager:get(key, "Level")
+  self:startLevel()
+end
+
+function LevelScreen:stopLevel()
+  if self.level then
+    self.layers.background:removeProp(self.backgroundProp)
+  end
+
+  self.level = nil
+end
+
+function LevelScreen:startLevel()
+  self.level.layers = self.layers
+  self.level:init()
+  self.backgroundProp = MOAIProp2D.new()
+  self.backgroundProp:setDeck(self.level.background)
+  self.layers.background:insertProp(self.backgroundProp)
+  self.level:start()
+end
 
 function LevelScreen:handleKey(code, down)
   --io.stdout:write(string.format(code, down))
@@ -100,7 +125,5 @@ end
 function LevelScreen:stopMoveRight()
   print("stop moving right")
 end
-
-
 
 return LevelScreen

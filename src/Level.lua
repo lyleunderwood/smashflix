@@ -1,7 +1,8 @@
+RigFactory = require "RigFactory"
 -- private methods are local functions here
 
 -- class boilerplate stuff
-Rig = {}
+Level = {}
 
 local function fieldChangedListener(self, key, value)
   getmetatable(self).__object[key] = value
@@ -19,20 +20,21 @@ local function fieldAccessListener(self, key)
     return getmetatable(self).__object[key]
 end
 
-function Rig:new(o)
-  local tab = Rig:innerNew(o)
+function Level:new(o)
+  local tab = Level:innerNew(o)
   local proxy = setmetatable({}, {__newindex = fieldChangedListener, __index = fieldAccessListener, __object = tab})
 
   return proxy, tab
 end
 
-function Rig:innerNew(o)
+function Level:innerNew(o)
   o = o or {
     -- property defaults
-    spritesheetName = nil,
-    spritesheet = nil,
-    prop = nil,
-    behavior = nil
+    behaviorName = nil,
+    behavior = nil,
+    backgroundFilename = nil,
+    background = nil,
+    layers = nil
   }
 
   setmetatable(o, self)
@@ -42,10 +44,19 @@ end
 
 -- instance methods
 
-function Rig:init()
-  self.spritesheet = ResourceManager:get(self.spritesheetName, "Spritesheet")
-  self.prop = MOAIProp2D:new()
-  self.prop:setDeck(self.spritesheet.deck)
+function Level:init()
+  self.background = ResourceManager:get(self.backgroundFilename, "Image")
+  self.background:setRect(-320, -240, 320, 240)
 end
 
-return Rig
+function Level:loadPc(x, y)
+  self.pc = RigFactory:build("pc")
+  self.pc:init()
+  self.layers.foreground:insertProp(self.pc.prop)
+end
+
+function Level:start()
+  self.behavior.start(self)
+end
+
+return Level
