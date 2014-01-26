@@ -63,7 +63,6 @@ function Spritesheet:buildAnimationForProp(animIdx, prop)
 end
 
 function Spritesheet:getCurveForAnimation(idx)
-  print(self.animations[1])
   local curve = MOAIAnimCurve.new()
   local anim = self.animations[idx]
   local frames = anim.frames

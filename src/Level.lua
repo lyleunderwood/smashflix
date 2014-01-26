@@ -53,6 +53,7 @@ function Level:loadPc(x, y)
   self.pc = RigFactory:build("pc")
   self.pc:init()
   self.layers.foreground:insertProp(self.pc.prop)
+  self.pc:start()
 end
 
 function Level:start()

@@ -95,35 +95,35 @@ function LevelScreen:handleKey(code, down)
 end
 
 function LevelScreen:startMoveUp()
-  print("start moving up")
+  self.level.pc.behavior:startMovement("up")
 end
 
 function LevelScreen:stopMoveUp()
-  print("stop moving up")
+  self.level.pc.behavior:stopMovement("up")
 end
 
 function LevelScreen:startMoveDown()
-  print("start moving down")
+  self.level.pc.behavior:startMovement("down")
 end
 
 function LevelScreen:stopMoveDown()
-  print("stop moving down")
+  self.level.pc.behavior:stopMovement("down")
 end
 
 function LevelScreen:startMoveLeft()
-  print("start moving left")
+  self.level.pc.behavior:startMovement("left")
 end
 
 function LevelScreen:stopMoveLeft()
-  print("stop moving left")
+  self.level.pc.behavior:stopMovement("left")
 end
 
 function LevelScreen:startMoveRight()
-  print("start moving right")
+  self.level.pc.behavior:startMovement("right")
 end
 
 function LevelScreen:stopMoveRight()
-  print("stop moving right")
+  self.level.pc.behavior:stopMovement("right")
 end
 
 return LevelScreen

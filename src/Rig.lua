@@ -44,8 +44,18 @@ end
 
 function Rig:init()
   self.spritesheet = ResourceManager:get(self.spritesheetName, "Spritesheet")
+  self.spritesheet:init()
   self.prop = MOAIProp2D:new()
   self.prop:setDeck(self.spritesheet.deck)
+end
+
+function Rig:start()
+  self.behavior:start(self)
+end
+
+function Rig:playAnimation(key)
+  local anim = self.spritesheet:buildAnimationForProp(key, self.prop)
+  anim:start()
 end
 
 return Rig
