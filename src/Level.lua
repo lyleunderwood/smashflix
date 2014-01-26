@@ -58,10 +58,31 @@ function Level:initObjects()
 end
 
 function Level:loadPc(x, y)
-  self.pc = RigFactory:build("pc")
+  self.pc = RigFactory:build("Pc")
+  self.pc.sendEvent = function(name, opts)
+    self:handleEvent(name, opts)
+  end
   self.pc:init()
   self.layers.foreground:insertProp(self.pc.prop)
   self.pc:start()
+end
+
+function Level:buildRig(key, init)
+  local rig = RigFactory:build(key)
+  print(rig)
+  rig.sendEvent = function(name, opts)
+    self:handleEvent(name, opts)
+  end
+  init(rig)
+  rig:init()
+  self.layers.foreground:insertProp(rig.prop)
+  rig:start()
+end
+
+function Level:handleEvent(name, opts)
+  if name == "buildRig" then
+    self:buildRig(opts.key, opts.init)
+  end
 end
 
 function Level:start()

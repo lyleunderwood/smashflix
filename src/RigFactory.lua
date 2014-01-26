@@ -11,17 +11,17 @@ function RigFactory:build(key)
 
   local rig = nil
 
-  if key == "pc" then
-    rig = self:buildPc()
-  end
+  --if key == "pc" then
+    rig = self:buildRig(key)
+  --end
 
   self.cache[key] = rig
 
   return rig
 end
 
-function RigFactory:buildPc()
-  return require "Pc"
+function RigFactory:buildRig(key)
+  return require(key)
 end
 
 return RigFactory

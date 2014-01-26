@@ -1,21 +1,20 @@
 require "Rig"
 
-local MAX_SPEED = 120.0
+local MAX_SPEED = 200.0
 
 pc = Rig:new({
-  spritesheetName = "spritesheets/pc",
+  spritesheetName = "spritesheets/playerBullet",
   pos = {x = -0, y = -0},
-  size = {w = 48, h = 48},
+  angle = 0,
+  size = {w = 32, h = 32},
   behavior = {
     movement = {
       up = false,
       down = false,
-      right = false,
-      left = false
+      left = false,
+      right = false
     },
-
     start = function(self, rig)
-      self.movementAction = MOAIAction:new():start()
       self.movementThread = MOAIThread:new()
       self.lastFrameTime = MOAISim:getDeviceTime()
 
@@ -27,8 +26,16 @@ pc = Rig:new({
         end
       )
       self.rig = rig
-      self:setState("Idle")
+      self:setState("Fly")
 
+    end,
+
+    setPos = function(self, pos)
+      self.pos = pos
+    end,
+
+    setMovement = function(self, mov)
+      self.movement = mov
     end,
 
     setState = function(self, state)
@@ -42,63 +49,15 @@ pc = Rig:new({
       method(self)
     end,
 
-    doIdleState = function(self)
-      self.rig:playAnimation("idle")
+    doFlyState = function(self)
+      self.rig:playAnimation("fly")
     end,
 
-    doMovingState = function(self)
+    doImpactState = function(self)
 
     end,
 
-    startMovement = function(self, dir)
-      if self.movement[dir] then
-        return
-      end
-
-      self.movement[dir] = true
-
-      self:updateMovementAnim()
-    end,
-
-    stopMovement = function(self, dir)
-      if not self.movement[dir] then
-        return
-      end
-
-      self.movement[dir] = false
-
-      self:updateMovementAnim()
-    end,
-
-    updateMovementAnim = function(self)
-      local mov = self.movement
-
-      if mov.right then
-        self.rig:playAnimation("right")
-      elseif mov.left then
-        self.rig:playAnimation("left")
-      elseif mov.up then
-        self.rig:playAnimation("up")
-      elseif mov.down then
-        self.rig:playAnimation("down")
-      end
-
-      if not self:isMoving() then
-        self.rig:playAnimation("idle")
-      end
-    end,
-
-    updateMovement = function(self)
-      local time = MOAISim:getDeviceTime()
-
-      local length = (time - self.lastFrameTime) * MAX_SPEED
-
-      self.rig:moveByDelta(self:buildMovementTransform(length))
-
-      self.lastFrameTime = time
-    end,
-
-    buildMovementTransform = function(self, length)
+    updateMovement = function(self, length)
       local mov = self.movement
       local delta = MOAITransform:new()
 
@@ -140,17 +99,7 @@ pc = Rig:new({
     end,
 
     fire = function(self)
-      self.rig.sendEvent("buildRig", {
-        key = "actors/PlayerBullet",
-        init = function(bulletRig)
-          local px, py, z = self.rig.body:getPosition()
-          bulletRig.pos = {x = px, y = py}
-          bulletRig.behavior.movement = self.movement
-          bulletRig.initBehavior = function(behavior)
-
-          end
-        end
-      })
+      
     end
   }
 })

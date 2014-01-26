@@ -8,7 +8,8 @@ local keymap = {
   [44] = "MoveUp",
   [111] = "MoveDown",
   [101] = "MoveRight",
-  [97] = "MoveLeft"
+  [97] = "MoveLeft",
+  [32] = "Fire"
 }
 
 local function fieldChangedListener(self, key, value)
@@ -124,6 +125,10 @@ end
 
 function LevelScreen:stopMoveRight()
   self.level.pc.behavior:stopMovement("right")
+end
+
+function LevelScreen:startFire()
+  self.level.pc.behavior:fire()
 end
 
 return LevelScreen
