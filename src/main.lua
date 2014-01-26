@@ -1,9 +1,27 @@
 -- moai setup stuff
 MOAISim.openWindow("Smashflix", 640, 480)
 
+viewportX = 640
+viewportY = 480
+viewportRatio = viewportY / viewportX
+
 viewport = MOAIViewport.new ()
-viewport:setSize(640, 480)
+viewport:setSize(viewportX, viewportY)
 viewport:setScale(640, 480)
+
+MOAIEnvironment.setListener(0, function(key, value)
+  viewportX = MOAIEnvironment.horizontalResolution
+  viewportY = MOAIEnvironment.verticalResolution
+
+  newRatio = viewportY / viewportX
+
+  if newRatio > viewportRatio then
+    viewportY = viewportX * viewportRatio
+  else
+    viewportX = viewportY / viewportRatio
+  end
+  viewport:setSize(viewportX, viewportY)
+end)
 
 backgroundLayer = MOAILayer2D.new ()
 backgroundLayer:setViewport(viewport)
@@ -17,7 +35,7 @@ MOAIRenderMgr.setRenderTable(renderLayers)
 world = MOAIBox2DWorld.new()
 world:setGravity(0,0)
 world:setUnitsToMeters(1/30)
---world:setDebugDrawEnabled(0)
+world:setDebugDrawEnabled(0)
 world:start()
 
 foregroundLayer:setBox2DWorld(world)

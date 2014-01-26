@@ -5,7 +5,7 @@ local MAX_SPEED = 120.0
 pc = Rig:new({
   spritesheetName = "spritesheets/pc",
   pos = {x = -0, y = -0},
-  size = {w = 32, h = 32},
+  size = {w = 48, h = 48},
   behavior = {
     movement = {
       up = false,
@@ -73,14 +73,18 @@ pc = Rig:new({
     updateMovementAnim = function(self)
       local mov = self.movement
 
-      if mov.up then
-        self.rig:playAnimation("up")
-      elseif mov.down then
-        self.rig:playAnimation("down")
-      elseif mov.right then
+      if mov.right then
         self.rig:playAnimation("right")
       elseif mov.left then
         self.rig:playAnimation("left")
+      elseif mov.up then
+        self.rig:playAnimation("up")
+      elseif mov.down then
+        self.rig:playAnimation("down")
+      end
+
+      if not self:isMoving() then
+        self.rig:playAnimation("idle")
       end
     end,
 
@@ -121,6 +125,11 @@ pc = Rig:new({
       end
 
       return delta
+    end,
+
+    isMoving = function(self)
+      local mov = self.movement
+      return mov.up or mov.down or mov.right or mov.left
     end,
 
     moveProp = function(self, delta)
