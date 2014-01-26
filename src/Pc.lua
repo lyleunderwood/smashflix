@@ -4,6 +4,8 @@ local MAX_SPEED = 120.0
 
 pc = Rig:new({
   spritesheetName = "spritesheets/pc",
+  pos = {x = -0, y = -0},
+  size = {w = 32, h = 32},
   behavior = {
     movement = {
       up = false,
@@ -87,7 +89,7 @@ pc = Rig:new({
 
       local length = (time - self.lastFrameTime) * MAX_SPEED
 
-      self:moveProp(self:buildMovementTransform(length))
+      self.rig:moveByDelta(self:buildMovementTransform(length))
 
       self.lastFrameTime = time
     end,
@@ -96,14 +98,26 @@ pc = Rig:new({
       local mov = self.movement
       local delta = MOAITransform:new()
 
-      if mov.up then
-        delta:setLoc(0, length, 0)
+      local angular = math.sqrt(MAX_SPEED * MAX_SPEED / 2)
+
+      if mov.up and mov.right then
+        self.rig.body:setLinearVelocity(angular, angular)
+      elseif mov.up and mov.left then
+        self.rig.body:setLinearVelocity(-angular, angular)
+      elseif mov.up then
+        self.rig.body:setLinearVelocity(0, MAX_SPEED)
+      elseif mov.down and mov.right then
+        self.rig.body:setLinearVelocity(angular, -angular)
+      elseif mov.down and mov.left then
+        self.rig.body:setLinearVelocity(-angular, -angular)
       elseif mov.down then
-          delta:setLoc(0, -1 * length, 0)
+        self.rig.body:setLinearVelocity(0, -MAX_SPEED)
       elseif mov.right then
-          delta:setLoc(length, 0, 0)
+        self.rig.body:setLinearVelocity(MAX_SPEED, 0)
       elseif mov.left then
-          delta:setLoc(-1 * length, 0, 0)
+        self.rig.body:setLinearVelocity(-MAX_SPEED, 0)
+      else
+        self.rig.body:setLinearVelocity(0, 0)
       end
 
       return delta

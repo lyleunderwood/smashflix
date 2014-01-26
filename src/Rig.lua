@@ -47,6 +47,15 @@ function Rig:init()
   self.spritesheet:init()
   self.prop = MOAIProp2D:new()
   self.prop:setDeck(self.spritesheet.deck)
+  self.body = world:addBody(MOAIBox2DBody.DYNAMIC)
+  self.body:addRect(
+    -self.size.w / 2,
+    self.size.h / 2,
+    self.size.w / 2, 
+    -self.size.h / 2
+  )
+  self.body:setTransform(self.pos.x, self.pos.y, 0)
+  self.prop:setAttrLink(MOAIProp2D.INHERIT_TRANSFORM, self.body, MOAIProp2D.TRANSFORM_TRAIT)
 end
 
 function Rig:start()
@@ -56,6 +65,14 @@ end
 function Rig:playAnimation(key)
   local anim = self.spritesheet:buildAnimationForProp(key, self.prop)
   anim:start()
+end
+
+function Rig:moveByDelta(delta)
+  local x, y, z = delta:getLoc()
+  local prop = self.prop
+  local px, py, pz = prop:getLoc()
+  --prop:setLoc(px + x, py + y, pz)
+  --self.body:setTransform(prop:getLoc())
 end
 
 return Rig

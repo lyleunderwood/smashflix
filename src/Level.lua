@@ -47,6 +47,14 @@ end
 function Level:init()
   self.background = ResourceManager:get(self.backgroundFilename, "Image")
   self.background:setRect(-320, -240, 320, 240)
+  self:initObjects()
+end
+
+function Level:initObjects()
+  for i = 1, #self.objects do
+    local body = world:addBody(MOAIBox2DBody.STATIC)
+    body:addRect(unpack(self.objects[i].bb))
+  end
 end
 
 function Level:loadPc(x, y)
