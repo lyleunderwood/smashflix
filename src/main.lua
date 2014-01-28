@@ -35,7 +35,7 @@ MOAIRenderMgr.setRenderTable(renderLayers)
 world = MOAIBox2DWorld.new()
 world:setGravity(0,0)
 world:setUnitsToMeters(1/30)
-world:setDebugDrawEnabled(0)
+--world:setDebugDrawEnabled(0)
 world:start()
 
 foregroundLayer:setBox2DWorld(world)

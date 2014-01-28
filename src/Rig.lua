@@ -48,7 +48,7 @@ function Rig:init()
   self.prop = MOAIProp2D:new()
   self.prop:setDeck(self.spritesheet.deck)
   self.body = world:addBody(MOAIBox2DBody.DYNAMIC)
-  self.body:addRect(
+  self.fixture = self.body:addRect(
     -self.size.w / 2,
     self.size.h / 2,
     self.size.w / 2, 
@@ -56,6 +56,15 @@ function Rig:init()
   )
   self.body:setTransform(self.pos.x, self.pos.y, 0)
   self.prop:setAttrLink(MOAIProp2D.INHERIT_TRANSFORM, self.body, MOAIProp2D.TRANSFORM_TRAIT)
+  self.fixture:setCollisionHandler(function(...)
+      self:handleCollision(...)
+  end)
+end
+
+function Rig:handleCollision(...)
+  if self.behavior.handleCollision then
+    self.behavior:handleCollision(...)
+  end
 end
 
 function Rig:start()

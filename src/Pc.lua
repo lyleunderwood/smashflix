@@ -5,7 +5,7 @@ local MAX_SPEED = 120.0
 pc = Rig:new({
   spritesheetName = "spritesheets/pc",
   pos = {x = -0, y = -0},
-  size = {w = 48, h = 48},
+  size = {w = 15, h = 30},
   behavior = {
     movement = {
       up = false,
