@@ -34,12 +34,12 @@ return function()
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
         self.lastFrameTime = MOAISim:getDeviceTime()
-        rig.fixture:setFilter(0x01, 0x14)
+        rig.fixture:setFilter(0x04, 0x13)
 
         local behavior = self
-        rig.fixture:setCollisionHandler(function(phase, pc, other, arbiter)
+        rig.fixture:setCollisionHandler(function(phase, bum, other, arbiter)
           behavior:die()
-        end, MOAIBox2DArbiter.BEGIN, 0x04)
+        end, MOAIBox2DArbiter.BEGIN, 0x02)
 
         self.movementThread:run(function()
             while not (self.state == "Stopped") do
@@ -93,6 +93,10 @@ return function()
       end,
 
       updateMovementAnim = function(self)
+        if not self.rig.body then
+          return
+        end
+
         local mov = self.movement
 
         if mov.right then

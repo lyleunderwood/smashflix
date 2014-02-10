@@ -3,6 +3,10 @@ return {
     start = function(level)
       level:loadPc()
 
+      level:buildRig("actors/Bum", function(rig)
+        rig.pos = {x = 100, y = 100}
+      end)
+
     end
   },
   backgroundFilename = "images/background.jpg",

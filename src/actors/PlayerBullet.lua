@@ -1,8 +1,25 @@
 require "Rig"
+require("../bit")
 
-local MAX_SPEED = 200.0
+local MAX_SPEED = 280.0
 
-pc = Rig:new({
+function deepcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[deepcopy(orig_key)] = deepcopy(orig_value)
+        end
+        setmetatable(copy, deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+return function()
+return deepcopy({
   spritesheetName = "spritesheets/playerBullet",
   pos = {x = -0, y = -0},
   angle = 0,
@@ -17,6 +34,12 @@ pc = Rig:new({
     start = function(self, rig)
       self.movementThread = MOAIThread:new()
       self.lastFrameTime = MOAISim:getDeviceTime()
+      rig.fixture:setFilter(0x02, 0x14)
+
+      local behavior = self
+      rig.fixture:setCollisionHandler(function(phase, bullet, other, arbiter)
+        behavior:impact()
+      end, MOAIBox2DArbiter.BEGIN, 0x14)
 
       self.movementThread:run(function()
           while not (self.state == "Stopped") do
@@ -58,6 +81,10 @@ pc = Rig:new({
     end,
 
     updateMovement = function(self, length)
+      if not self.rig.body then
+        return
+      end
+
       local mov = self.movement
       local delta = MOAITransform:new()
 
@@ -100,8 +127,18 @@ pc = Rig:new({
 
     fire = function(self)
       
+    end,
+
+    impact = function(self)
+      self.rig.fixture:destroy()
+      self.rig.body:destroy()
+      self.rig.body = nil
+      self.rig.fixture = nil
+      self:setState("Stopped")
+      self.rig.sendEvent("destroyRig", {
+        rig = self.rig
+      })
     end
   }
 })
-
-return pc
+end

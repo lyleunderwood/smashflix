@@ -53,7 +53,8 @@ end
 function Level:initObjects()
   for i = 1, #self.objects do
     local body = world:addBody(MOAIBox2DBody.STATIC)
-    body:addRect(unpack(self.objects[i].bb))
+    local fixture = body:addRect(unpack(self.objects[i].bb))
+    fixture:setFilter(0x10, 0x000003)
   end
 end
 
@@ -69,7 +70,6 @@ end
 
 function Level:buildRig(key, init)
   local rig = RigFactory:build(key)
-  print(rig)
   rig.sendEvent = function(name, opts)
     self:handleEvent(name, opts)
   end
@@ -79,9 +79,15 @@ function Level:buildRig(key, init)
   rig:start()
 end
 
+function Level:destroyRig(rig)
+  self.layers.foreground:removeProp(rig.prop)
+end
+
 function Level:handleEvent(name, opts)
   if name == "buildRig" then
     self:buildRig(opts.key, opts.init)
+  elseif name == "destroyRig" then
+    self:destroyRig(opts.rig);
   end
 end
 

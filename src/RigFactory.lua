@@ -5,9 +5,9 @@ require "Rig"
 RigFactory = {cache = {}}
 
 function RigFactory:build(key)
-  if self.cache[key] then
-    return self.cache[key]
-  end
+  --if self.cache[key] then
+  --  return self.cache[key]
+  --end
 
   local rig = nil
 
@@ -15,13 +15,13 @@ function RigFactory:build(key)
     rig = self:buildRig(key)
   --end
 
-  self.cache[key] = rig
+  --self.cache[key] = rig
 
   return rig
 end
 
 function RigFactory:buildRig(key)
-  return require(key)
+  return Rig:new(require(key)())
 end
 
 return RigFactory

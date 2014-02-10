@@ -48,7 +48,7 @@ function Rig:init()
   self.prop = MOAIProp2D:new()
   self.prop:setDeck(self.spritesheet.deck)
   self.body = world:addBody(MOAIBox2DBody.DYNAMIC)
-  self.body:addRect(
+  self.fixture = self.body:addRect(
     -self.size.w / 2,
     self.size.h / 2,
     self.size.w / 2, 
