@@ -25,6 +25,9 @@ return deepcopy({
   angle = 0,
   size = {w = 32, h = 32},
   behavior = {
+    handleCollision = function(self, phase, us, them, arbiter)
+      print(self, phase, us, them, arbiter)
+    end,
     movement = {
       up = false,
       down = false,
@@ -50,6 +53,7 @@ return deepcopy({
       )
       self.rig = rig
       self:setState("Fly")
+      self.rig.fixture:setSensor(true)
 
     end,
 

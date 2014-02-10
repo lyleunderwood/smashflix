@@ -56,6 +56,15 @@ function Rig:init()
   )
   self.body:setTransform(self.pos.x, self.pos.y, 0)
   self.prop:setAttrLink(MOAIProp2D.INHERIT_TRANSFORM, self.body, MOAIProp2D.TRANSFORM_TRAIT)
+  self.fixture:setCollisionHandler(function(...)
+      self:handleCollision(...)
+  end)
+end
+
+function Rig:handleCollision(...)
+  if self.behavior.handleCollision then
+    self.behavior:handleCollision(...)
+  end
 end
 
 function Rig:start()
