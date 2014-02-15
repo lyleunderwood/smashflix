@@ -44,7 +44,7 @@ end
 
 function Rig:init()
   self.spritesheet = ResourceManager:get(self.spritesheetName, "Spritesheet")
-  self.spritesheet:init()
+  --self.spritesheet:init()
   self.prop = MOAIProp2D:new()
   self.prop:setDeck(self.spritesheet.deck)
   self.body = world:addBody(MOAIBox2DBody.DYNAMIC)

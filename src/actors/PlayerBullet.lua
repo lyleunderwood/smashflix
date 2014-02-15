@@ -23,7 +23,7 @@ return deepcopy({
   spritesheetName = "spritesheets/playerBullet",
   pos = {x = -0, y = -0},
   angle = 0,
-  size = {w = 32, h = 32},
+  size = {w = 10, h = 10},
   behavior = {
     handleCollision = function(self, phase, us, them, arbiter)
       print(self, phase, us, them, arbiter)
@@ -134,6 +134,10 @@ return deepcopy({
     end,
 
     impact = function(self)
+      if self.state == "Stopped" then
+        return
+      end
+
       self.rig.fixture:destroy()
       self.rig.body:destroy()
       self.rig.body = nil

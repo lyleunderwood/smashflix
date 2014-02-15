@@ -1,7 +1,7 @@
 return {
   numCellsX = 8,
   numCellsY = 8,
-  cellRect = {x1 = -16, y1 = -16, x2 = 16, y2 = 16},
+  cellRect = {x1 = -10, y1 = -10, x2 = 10, y2 = 10},
   animations = {
     fly = {
       frames = {

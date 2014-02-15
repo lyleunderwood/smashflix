@@ -21,6 +21,7 @@ end
 function ResourceManager:loadSpritesheet(key)
   local data = require(key)
   local spritesheet = Spritesheet:new(data)
+  spritesheet:init()
   return spritesheet
 end
 

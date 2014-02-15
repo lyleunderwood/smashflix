@@ -48,6 +48,7 @@ end
 function Spritesheet:init()
   self.deck = MOAITileDeck2D.new()
   self.deck:setTexture(self.imageFilename)
+  print("creating spritesheet", self.imageFilename)
   self.deck:setSize(self.numCellsX, self.numCellsY)
   local rect = self.cellRect
   self.deck:setRect(rect.x1, rect.y1, rect.x2, rect.y2)

@@ -9,6 +9,10 @@ local keymap = {
   [111] = "MoveDown",
   [101] = "MoveRight",
   [97] = "MoveLeft",
+  [99] = "AimUp",
+  [116] = "AimDown",
+  [110] = "AimRight",
+  [104] = "AimLeft",
   [32] = "Fire"
 }
 
@@ -127,8 +131,40 @@ function LevelScreen:stopMoveRight()
   self.level.pc.behavior:stopMovement("right")
 end
 
+function LevelScreen:startAimUp()
+  self.level.pc.behavior:startAim("up")
+end
+
+function LevelScreen:stopAimUp()
+  self.level.pc.behavior:stopAim("up")
+end
+
+function LevelScreen:startAimDown()
+  self.level.pc.behavior:startAim("down")
+end
+
+function LevelScreen:stopAimDown()
+  self.level.pc.behavior:stopAim("down")
+end
+
+function LevelScreen:startAimLeft()
+  self.level.pc.behavior:startAim("left")
+end
+
+function LevelScreen:stopAimLeft()
+  self.level.pc.behavior:stopAim("left")
+end
+
+function LevelScreen:startAimRight()
+  self.level.pc.behavior:startAim("right")
+end
+
+function LevelScreen:stopAimRight()
+  self.level.pc.behavior:stopAim("right")
+end
+
 function LevelScreen:startFire()
-  self.level.pc.behavior:fire()
+  --self.level.pc.behavior:fire()
 end
 
 return LevelScreen

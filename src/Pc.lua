@@ -1,6 +1,7 @@
 require "Rig"
 
 local MAX_SPEED = 120.0
+local FIRE_DELAY = 0.25
 
 function deepcopy(orig)
     local orig_type = type(orig)
@@ -30,11 +31,32 @@ return function()
         left = false
       },
 
+      aim = {
+        up = false,
+        down = false,
+        right = false,
+        left = false
+      },
+
+      firing = false,
+
+      firingTimer = nil,
+
       start = function(self, rig)
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
         self.lastFrameTime = MOAISim:getDeviceTime()
         rig.fixture:setFilter(0x01, 0x14)
+
+        self.firingTimer = MOAITimer:new()
+        self.firingTimer:setSpan(FIRE_DELAY)
+        self.firingTimer:setMode(MOAITimer.LOOP)
+        self.firingTimer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function()
+          if not self.firing then
+            return self.firingTimer:stop()
+          end
+          self:fire()
+        end)
 
         local behavior = self
         rig.fixture:setCollisionHandler(function(phase, pc, other, arbiter)
@@ -90,6 +112,56 @@ return function()
         self.movement[dir] = false
 
         self:updateMovementAnim()
+      end,
+
+      startAim = function(self, dir)
+        if self.aim[dir] then
+          return
+        end
+
+        self.aim[dir] = true
+
+        self:updateMovementAnim()
+
+        self:startFiring()
+      end,
+
+      stopAim = function(self, dir)
+        if not self.aim[dir] then
+          return
+        end
+
+        self.aim[dir] = false
+
+        self:updateMovementAnim()
+
+        if not self:shouldBeFiring() then
+          self:stopFiring()
+        end
+      end,
+
+      shouldBeFiring = function(self)
+        return self.aim.up or self.aim.down or self.aim.right or self.aim.left
+      end,
+
+      startFiring = function(self)
+        if self.firing then
+          return
+        end
+
+        self.firing = true
+
+        --self:fire()
+        self.firingTimer:start()
+      end,
+
+      stopFiring = function(self)
+        if not self.firing then
+          return
+        end
+
+        self.firing = false
+        --self.firingTimer:stop()
       end,
 
       updateMovementAnim = function(self)
@@ -168,10 +240,10 @@ return function()
             local px, py, z = self.rig.body:getPosition()
 
             mov = {}
-            mov.left = self.movement.left
-            mov.right = self.movement.right
-            mov.up = self.movement.up
-            mov.down = self.movement.down
+            mov.left = self.aim.left
+            mov.right = self.aim.right
+            mov.up = self.aim.up
+            mov.down = self.aim.down
 
             bulletRig.pos = {x = px, y = py}
             bulletRig.behavior.movement = mov

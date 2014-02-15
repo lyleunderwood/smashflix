@@ -192,7 +192,7 @@ return function()
         self.rig.body = nil
         self.rig.fixture = nil
         self:setState("Stopped")
-        self.rig.sendEvent("destroyRig", {
+        self.rig.sendEvent("killEnemy", {
           rig = self.rig
         })
       end

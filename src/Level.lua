@@ -37,6 +37,8 @@ function Level:innerNew(o)
     layers = nil
   }
 
+  o.enemies = {}
+
   setmetatable(o, self)
   self.__index = self
   return o
@@ -68,6 +70,25 @@ function Level:loadPc(x, y)
   self.pc:start()
 end
 
+function Level:buildEnemy(key, init)
+  local rig = self:buildRig(key, init)
+  table.insert(self.enemies, rig)
+  print("adding enemy:", #self.enemies)
+
+  return rig
+end
+
+function Level:killEnemy(rig)
+  for k,v in pairs(self.enemies) do
+    if v == rig then
+      table.remove(self.enemies, k)
+    end
+  end
+  print("removing enemy:", #self.enemies)
+
+  return self:destroyRig(rig)
+end
+
 function Level:buildRig(key, init)
   local rig = RigFactory:build(key)
   rig.sendEvent = function(name, opts)
@@ -77,6 +98,8 @@ function Level:buildRig(key, init)
   rig:init()
   self.layers.foreground:insertProp(rig.prop)
   rig:start()
+
+  return rig
 end
 
 function Level:destroyRig(rig)
@@ -88,6 +111,8 @@ function Level:handleEvent(name, opts)
     self:buildRig(opts.key, opts.init)
   elseif name == "destroyRig" then
     self:destroyRig(opts.rig);
+  elseif name == "killEnemy" then
+    self:killEnemy(opts.rig);
   end
 end
 

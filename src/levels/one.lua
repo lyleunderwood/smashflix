@@ -3,8 +3,12 @@ return {
     start = function(level)
       level:loadPc()
 
-      level:buildRig("actors/Bum", function(rig)
+      level:buildEnemy("actors/Bum", function(rig)
         rig.pos = {x = 100, y = 100}
+      end)
+
+      level:buildEnemy("actors/Bum", function(rig)
+        rig.pos = {x = 150, y = 100}
       end)
 
     end
