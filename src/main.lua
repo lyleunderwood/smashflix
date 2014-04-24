@@ -57,3 +57,10 @@ local cb = function(...)
 end
 
 MOAIInputMgr.device.keyboard:setCallback(cb)
+
+MOAIUntzSystem.initialize(44100)
+song1 = MOAIUntzSound.new()
+song1:load("sounds/44100.wav")
+song1:setLooping(true)
+song1:setLoopPoints(0, song1:getLength())
+song1:play()
