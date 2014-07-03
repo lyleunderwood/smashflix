@@ -9,7 +9,7 @@ viewport = MOAIViewport.new ()
 viewport:setSize(viewportX, viewportY)
 viewport:setScale(640, 480)
 
-MOAIUntzSystem.initialize(44100) --44100)
+MOAIUntzSystem.initialize(44100, 2000)
 
 MOAIEnvironment.setListener(0, function(key, value)
   viewportX = MOAIEnvironment.horizontalResolution
@@ -62,6 +62,6 @@ MOAIInputMgr.device.keyboard:setCallback(cb)
 
 local theme = ResourceManager:get("sounds/theme.wav", "Sound")
 theme:setLooping(true)
-theme:setLoopPoints(0.0, theme:getLength() - 0)
+theme:setLoopPoints(10.0, 15) --theme:getLength() - 0)
 theme:play()
 
