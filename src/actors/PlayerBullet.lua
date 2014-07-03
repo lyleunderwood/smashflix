@@ -23,7 +23,7 @@ return deepcopy({
   spritesheetName = "spritesheets/playerBullet",
   pos = {x = -0, y = -0},
   angle = 0,
-  size = {w = 10, h = 10},
+  size = {w = 10, h = 7},
   behavior = {
     handleCollision = function(self, phase, us, them, arbiter)
       print(self, phase, us, them, arbiter)
@@ -38,10 +38,11 @@ return deepcopy({
       self.movementThread = MOAIThread:new()
       self.lastFrameTime = MOAISim:getDeviceTime()
       rig.fixture:setFilter(0x02, 0x14)
+      rig.fixture.behavior = self
 
       local behavior = self
       rig.fixture:setCollisionHandler(function(phase, bullet, other, arbiter)
-        behavior:impact()
+        behavior:impact(other)
       end, MOAIBox2DArbiter.BEGIN, 0x14)
 
       self.movementThread:run(function()
@@ -130,10 +131,10 @@ return deepcopy({
     end,
 
     fire = function(self)
-      
+
     end,
 
-    impact = function(self)
+    impact = function(self, target)
       if self.state == "Stopped" then
         return
       end
@@ -146,6 +147,10 @@ return deepcopy({
       self.rig.sendEvent("destroyRig", {
         rig = self.rig
       })
+    end,
+
+    getDamage = function(self)
+      return 5
     end
   }
 })

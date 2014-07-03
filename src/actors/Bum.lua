@@ -1,6 +1,6 @@
 require "Rig"
 
-local MAX_SPEED = 120.0
+local MAX_SPEED = 80.0
 
 function deepcopy(orig)
     local orig_type = type(orig)
@@ -19,9 +19,9 @@ end
 
 return function()
   return deepcopy({
-    spritesheetName = "spritesheets/pc",
+    spritesheetName = "spritesheets/bum",
     pos = {x = -0, y = -0},
-    size = {w = 48, h = 48},
+    size = {w = 15, h = 30},
     behavior = {
       movement = {
         up = false,
@@ -30,15 +30,28 @@ return function()
         left = false
       },
 
+      startHealth = 10,
+
+      currentHealth = 10,
+
+      target = {x = 360, y = 240},
+
+      isEnemy = true,
+
       start = function(self, rig)
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
         self.lastFrameTime = MOAISim:getDeviceTime()
-        rig.fixture:setFilter(0x04, 0x13)
+        rig.fixture:setFilter(0x04, 0x17)
+        rig.fixture.behavior = self
+        
+        self.deathSound = ResourceManager:get("sounds/scream.wav", "Sound")
+
+        self.currentHealth = self.startHealth
 
         local behavior = self
         rig.fixture:setCollisionHandler(function(phase, bum, other, arbiter)
-          behavior:die()
+          behavior:takeDamage(other)
         end, MOAIBox2DArbiter.BEGIN, 0x02)
 
         self.movementThread:run(function()
@@ -119,6 +132,18 @@ return function()
 
         local length = (time - self.lastFrameTime) * MAX_SPEED
 
+        x, y = self.rig.body:getPosition()
+        self.rig.pos.x = x
+        self.rig.pos.y = y
+        local pos = self.rig.pos
+
+        self.movement = {
+          up = pos.y < self.target.y,
+          down = pos.y > self.target.y,
+          right = pos.x < self.target.x,
+          left = pos.x > self.target.x
+        }
+
         self.rig:moveByDelta(self:buildMovementTransform(length))
 
         self.lastFrameTime = time
@@ -186,7 +211,15 @@ return function()
         })
       end,
 
+      takeDamage = function(self, bullet)
+        self.currentHealth = self.currentHealth - bullet.behavior:getDamage()
+        if self.currentHealth <= 0 then
+          self.die(self)
+        end
+      end,
+
       die = function(self)
+        self.deathSound:play()
         self.rig.fixture:destroy()
         self.rig.body:destroy()
         self.rig.body = nil

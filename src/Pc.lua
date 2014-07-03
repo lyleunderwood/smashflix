@@ -48,6 +48,8 @@ return function()
         self.lastFrameTime = MOAISim:getDeviceTime()
         rig.fixture:setFilter(0x01, 0x14)
 
+        self.fireSound = ResourceManager:get("sounds/fire.wav", "Sound")
+
         self.firingTimer = MOAITimer:new()
         self.firingTimer:setSpan(FIRE_DELAY)
         self.firingTimer:setMode(MOAITimer.LOOP)
@@ -167,14 +169,40 @@ return function()
       updateMovementAnim = function(self)
         local mov = self.movement
 
+        local key
+        local movkey
+        local aimkey = ""
+
         if mov.right then
-          self.rig:playAnimation("right")
+          movkey = "right"
         elseif mov.left then
-          self.rig:playAnimation("left")
+          movkey = "left"
         elseif mov.up then
-          self.rig:playAnimation("up")
+          movkey = "up"
         elseif mov.down then
-          self.rig:playAnimation("down")
+          movkey = "down"
+        end
+
+        if self.aim.up then
+          aimkey = "up"
+        elseif self.aim.down then
+          aimkey = "down"
+        end
+
+        if self.aim.right then
+          aimkey = aimkey.."right"
+        elseif self.aim.left then
+          aimkey = aimkey.."left"
+        end
+
+        if movkey and not (aimkey == "") then
+          key = movkey.."_"..aimkey
+        elseif movkey then
+          key = movkey.."_"..movkey
+        end
+
+        if key then
+          self.rig:playAnimation(key)
         end
 
         if not self:isMoving() then
@@ -186,6 +214,10 @@ return function()
         local time = MOAISim:getDeviceTime()
 
         local length = (time - self.lastFrameTime) * MAX_SPEED
+
+        x, y = self.rig.body:getPosition()
+        self.rig.pos.x = x
+        self.rig.pos.y = y
 
         self.rig:moveByDelta(self:buildMovementTransform(length))
 
@@ -234,6 +266,8 @@ return function()
       end,
 
       fire = function(self)
+        self.fireSound:play()
+
         self.rig.sendEvent("buildRig", {
           key = "actors/PlayerBullet",
           init = function(bulletRig)

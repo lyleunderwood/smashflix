@@ -9,6 +9,8 @@ viewport = MOAIViewport.new ()
 viewport:setSize(viewportX, viewportY)
 viewport:setScale(640, 480)
 
+MOAIUntzSystem.initialize(44100) --44100)
+
 MOAIEnvironment.setListener(0, function(key, value)
   viewportX = MOAIEnvironment.horizontalResolution
   viewportY = MOAIEnvironment.verticalResolution
@@ -35,7 +37,7 @@ MOAIRenderMgr.setRenderTable(renderLayers)
 world = MOAIBox2DWorld.new()
 world:setGravity(0,0)
 world:setUnitsToMeters(1/30)
---world:setDebugDrawEnabled(0)
+world:setDebugDrawEnabled(0)
 world:start()
 
 foregroundLayer:setBox2DWorld(world)
@@ -58,9 +60,8 @@ end
 
 MOAIInputMgr.device.keyboard:setCallback(cb)
 
-MOAIUntzSystem.initialize(44100)
-song1 = MOAIUntzSound.new()
-song1:load("sounds/44100.wav")
-song1:setLooping(true)
-song1:setLoopPoints(0, song1:getLength())
-song1:play()
+local theme = ResourceManager:get("sounds/theme.wav", "Sound")
+theme:setLooping(true)
+theme:setLoopPoints(0.0, theme:getLength() - 0)
+theme:play()
+

@@ -37,4 +37,11 @@ function ResourceManager:loadLevel(key)
   return level
 end
 
+function ResourceManager:loadSound(key)
+  local sound = MOAIUntzSound.new()
+  sound:load(key)
+
+  return sound
+end
+
 return ResourceManager

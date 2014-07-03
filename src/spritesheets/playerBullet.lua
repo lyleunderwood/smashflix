@@ -1,22 +1,22 @@
 return {
-  numCellsX = 8,
-  numCellsY = 8,
-  cellRect = {x1 = -10, y1 = -10, x2 = 10, y2 = 10},
+  numCellsX = 1,
+  numCellsY = 1,
+  cellRect = {x1 = 0, y1 = 0, x2 = 10, y2 = 7},
   animations = {
     fly = {
       frames = {
         {delay = 0.5, idx = 1},
-        {delay = 0.5, idx = 2},
-        {delay = 0.5, idx = 3}
+        {delay = 0.5, idx = 1},
+        {delay = 0.5, idx = 1}
       }
     },
     impact = {
       frames = {
-        {delay = 0.5, idx = 4},
-        {delay = 0.5, idx = 5},
-        {delay = 0.5, idx = 6}
+        {delay = 0.5, idx = 1},
+        {delay = 0.5, idx = 1},
+        {delay = 0.5, idx = 1}
       }
     }
   },
-  imageFilename = "images/numbers.png"
+  imageFilename = "images/kornpop.png"
 }
