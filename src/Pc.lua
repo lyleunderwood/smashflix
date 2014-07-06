@@ -1,7 +1,9 @@
 require "Rig"
 
-local MAX_SPEED = 120.0
+local BASE_SPEED = 120.0
 local FIRE_DELAY = 0.25
+local SPEEDBOOST_DURATION = 5
+local SPEEDBOOST_MULTIPLIER = 2
 
 function deepcopy(orig)
     local orig_type = type(orig)
@@ -42,11 +44,13 @@ return function()
 
       firingTimer = nil,
 
+      speedBoost = 1,
+
       start = function(self, rig)
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
         self.lastFrameTime = MOAISim:getDeviceTime()
-        rig.fixture:setFilter(0x01, 0x14)
+        rig.fixture:setFilter(0x01, 0x34)
 
         self.fireSound = ResourceManager:get("sounds/fire.wav", "Sound")
 
@@ -60,10 +64,25 @@ return function()
           self:fire()
         end)
 
+        self.speedBoostTimer = MOAITimer:new()
+        self.speedBoostTimer:setSpan(SPEEDBOOST_DURATION)
+        --self.speedBoostTimer:setMode(MOAITimer.LOOP)
+        self.speedBoostTimer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function()
+          self.speedBoost = SPEEDBOOST_MULTIPLIER
+        end)
+
+        self.speedBoostTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+          self.speedBoost = 1
+        end)
+
         local behavior = self
         rig.fixture:setCollisionHandler(function(phase, pc, other, arbiter)
-          behavior:die()
-        end, MOAIBox2DArbiter.BEGIN, 0x04)
+          if other.behavior.isPickup then
+            behavior:pickup(other)
+          else
+            behavior:die()
+          end
+        end, MOAIBox2DArbiter.BEGIN, 0x24)
 
         self.movementThread:run(function()
             while not (self.state == "Stopped") do
@@ -213,7 +232,7 @@ return function()
       updateMovement = function(self)
         local time = MOAISim:getDeviceTime()
 
-        local length = (time - self.lastFrameTime) * MAX_SPEED
+        local length = (time - self.lastFrameTime) * BASE_SPEED
 
         x, y = self.rig.body:getPosition()
         self.rig.pos.x = x
@@ -228,24 +247,26 @@ return function()
         local mov = self.movement
         local delta = MOAITransform:new()
 
-        local angular = math.sqrt(MAX_SPEED * MAX_SPEED / 2)
+        local speed = BASE_SPEED * self.speedBoost
+
+        local angular = math.sqrt(speed * speed / 2)
 
         if mov.up and mov.right then
           self.rig.body:setLinearVelocity(angular, angular)
         elseif mov.up and mov.left then
           self.rig.body:setLinearVelocity(-angular, angular)
         elseif mov.up then
-          self.rig.body:setLinearVelocity(0, MAX_SPEED)
+          self.rig.body:setLinearVelocity(0, speed)
         elseif mov.down and mov.right then
           self.rig.body:setLinearVelocity(angular, -angular)
         elseif mov.down and mov.left then
           self.rig.body:setLinearVelocity(-angular, -angular)
         elseif mov.down then
-          self.rig.body:setLinearVelocity(0, -MAX_SPEED)
+          self.rig.body:setLinearVelocity(0, -speed)
         elseif mov.right then
-          self.rig.body:setLinearVelocity(MAX_SPEED, 0)
+          self.rig.body:setLinearVelocity(speed, 0)
         elseif mov.left then
-          self.rig.body:setLinearVelocity(-MAX_SPEED, 0)
+          self.rig.body:setLinearVelocity(-speed, 0)
         else
           self.rig.body:setLinearVelocity(0, 0)
         end
@@ -286,6 +307,14 @@ return function()
             end
           end
         })
+      end,
+
+      pickup = function(self, item)
+        if item.behavior.itemType == "speedboost" then
+          print("speedboost!")
+          self.speedBoostTimer:setTime(0)
+          self.speedBoostTimer:start()
+        end
       end,
 
       die = function(self)

@@ -218,8 +218,26 @@ return function()
         end
       end,
 
+      nextTick = function(self, cb)
+        MOAIThread:new():run(function()
+          cb(self)
+        end)
+      end,
+
       die = function(self)
         self.deathSound:play()
+
+        local px, py, z = self.rig.body:getPosition()
+        self:nextTick(function(self)
+          self.rig.sendEvent("buildRig", {
+            key = "actors/GasCan",
+            init = function(gasCanRig)
+
+              gasCanRig.pos = {x = px, y = py}
+            end
+          })
+        end)
+
         self.rig.fixture:destroy()
         self.rig.body:destroy()
         self.rig.body = nil
