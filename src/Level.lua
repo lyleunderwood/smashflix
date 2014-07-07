@@ -61,7 +61,7 @@ function Level:initObjects()
 end
 
 function Level:loadPc(x, y)
-  self.pc = RigFactory:build("Pc")
+  self.pc = RigFactory:build("actors/Pc")
   self.pc.sendEvent = function(name, opts)
     self:handleEvent(name, opts)
   end
