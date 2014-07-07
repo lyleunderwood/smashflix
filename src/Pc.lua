@@ -1,27 +1,9 @@
 require "Rig"
-
-local BASE_SPEED = 120.0
-local FIRE_DELAY = 0.25
-local SPEEDBOOST_DURATION = 5
-local SPEEDBOOST_MULTIPLIER = 2
-
-function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
+require "bit"
+local util = require "util"
 
 return function()
-  return deepcopy({
+  return util.deepcopy({
     spritesheetName = "spritesheets/pc",
     pos = {x = -0, y = -0},
     size = {w = 15, h = 30},
@@ -50,12 +32,12 @@ return function()
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
         self.lastFrameTime = MOAISim:getDeviceTime()
-        rig.fixture:setFilter(0x01, 0x34)
+        rig.fixture:setFilter(COL_PC, util.bor(COL_WALL, COL_ENEMY, COL_PICKUP))
 
         self.fireSound = ResourceManager:get("sounds/fire.wav", "Sound")
 
         self.firingTimer = MOAITimer:new()
-        self.firingTimer:setSpan(FIRE_DELAY)
+        self.firingTimer:setSpan(PC_FIRE_DELAY)
         self.firingTimer:setMode(MOAITimer.LOOP)
         self.firingTimer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function()
           if not self.firing then
@@ -66,7 +48,6 @@ return function()
 
         self.speedBoostTimer = MOAITimer:new()
         self.speedBoostTimer:setSpan(SPEEDBOOST_DURATION)
-        --self.speedBoostTimer:setMode(MOAITimer.LOOP)
         self.speedBoostTimer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function()
           self.speedBoost = SPEEDBOOST_MULTIPLIER
         end)
@@ -82,7 +63,7 @@ return function()
           else
             behavior:die()
           end
-        end, MOAIBox2DArbiter.BEGIN, 0x24)
+        end, MOAIBox2DArbiter.BEGIN, util.bor(COL_ENEMY, COL_PICKUP))
 
         self.movementThread:run(function()
             while not (self.state == "Stopped") do
@@ -232,7 +213,7 @@ return function()
       updateMovement = function(self)
         local time = MOAISim:getDeviceTime()
 
-        local length = (time - self.lastFrameTime) * BASE_SPEED
+        local length = (time - self.lastFrameTime) * PC_BASE_SPEED
 
         x, y = self.rig.body:getPosition()
         self.rig.pos.x = x
@@ -247,7 +228,7 @@ return function()
         local mov = self.movement
         local delta = MOAITransform:new()
 
-        local speed = BASE_SPEED * self.speedBoost
+        local speed = PC_BASE_SPEED * self.speedBoost
 
         local angular = math.sqrt(speed * speed / 2)
 

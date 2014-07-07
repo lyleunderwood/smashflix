@@ -1,25 +1,8 @@
 require "Rig"
-require("../bit")
-
-local MAX_SPEED = 280.0
-
-function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
+local util = require "util"
 
 return function()
-return deepcopy({
+return util.deepcopy({
   spritesheetName = "spritesheets/gasCan",
   pos = {x = -0, y = -0},
   angle = 0,
@@ -31,13 +14,13 @@ return deepcopy({
     start = function(self, rig)
       self.movementThread = MOAIThread:new()
       self.lastFrameTime = MOAISim:getDeviceTime()
-      rig.fixture:setFilter(0x20, 0x01)
+      rig.fixture:setFilter(COL_PICKUP, COL_PC)
       rig.fixture.behavior = self
 
       local behavior = self
       rig.fixture:setCollisionHandler(function(phase, bullet, other, arbiter)
         behavior:impact(other)
-      end, MOAIBox2DArbiter.BEGIN, 0x01)
+      end, MOAIBox2DArbiter.BEGIN, COL_PC)
 
       self.rig = rig
       self:setState("Idle")
@@ -87,10 +70,6 @@ return deepcopy({
       self.rig.sendEvent("destroyRig", {
         rig = self.rig
       })
-    end,
-
-    getDamage = function(self)
-      return 5
     end
   }
 })

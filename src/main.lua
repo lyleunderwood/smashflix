@@ -1,4 +1,5 @@
 -- moai setup stuff
+require "constants"
 MOAISim.openWindow("Smashflix", 640, 480)
 
 viewportX = 640
