@@ -1,6 +1,5 @@
 require "Rig"
-require "bit"
-local util = require "util"
+local util = require "../util"
 
 return function()
   return util.deepcopy({
