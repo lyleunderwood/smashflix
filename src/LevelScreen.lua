@@ -1,20 +1,37 @@
+local util = require "util"
 
 -- private methods are local functions here
 
 -- class boilerplate stuff
 LevelScreen = {}
 
-local keymap = {
-  [44] = "MoveUp",
-  [111] = "MoveDown",
-  [101] = "MoveRight",
-  [97] = "MoveLeft",
-  [99] = "AimUp",
-  [116] = "AimDown",
-  [110] = "AimRight",
-  [104] = "AimLeft",
-  [32] = "Fire"
-}
+local keymap
+
+if util.getKBLayout() == "dvorak" then
+  keymap = {
+    [44] = "MoveUp",
+    [111] = "MoveDown",
+    [101] = "MoveRight",
+    [97] = "MoveLeft",
+    [99] = "AimUp",
+    [116] = "AimDown",
+    [110] = "AimRight",
+    [104] = "AimLeft",
+    [32] = "Fire"
+  }
+else
+  keymap = {
+    [119] = "MoveUp",
+    [115] = "MoveDown",
+    [100] = "MoveRight",
+    [97] = "MoveLeft",
+    [105] = "AimUp",
+    [107] = "AimDown",
+    [108] = "AimRight",
+    [106] = "AimLeft",
+    [32] = "Fire"
+  }
+end
 
 local function fieldChangedListener(self, key, value)
   getmetatable(self).__object[key] = value

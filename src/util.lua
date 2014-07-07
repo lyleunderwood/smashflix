@@ -37,5 +37,18 @@ return {
     end
 
     return mask
+  end,
+
+  getKBLayout = function()
+    if MOAIEnvironment.OS_BRAND_LINUX then
+      local dvorak = os.execute("setxkbmap -print | awk -F\"+\" '/xkb_symbols/ {print $2}' |grep dvorak")
+      if dvorak == 0 then
+        return "dvorak"
+      else
+        return "en"
+      end
+    else
+      return "en"
+    end
   end
 }
