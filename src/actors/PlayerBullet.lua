@@ -122,14 +122,8 @@ return util.deepcopy({
         return
       end
 
-      self.rig.fixture:destroy()
-      self.rig.body:destroy()
-      self.rig.body = nil
-      self.rig.fixture = nil
       self:setState("Stopped")
-      self.rig.sendEvent("destroyRig", {
-        rig = self.rig
-      })
+      self.rig:destroy()
     end,
 
     getDamage = function(self)

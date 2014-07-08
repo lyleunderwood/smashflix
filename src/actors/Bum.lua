@@ -213,7 +213,7 @@ return function()
 
         if util.roll(4) then
           local px, py, z = self.rig.body:getPosition()
-          self:nextTick(function(self)
+          util.nextTick(self, function(self)
             self.rig.sendEvent("buildRig", {
               key = "actors/GasCan",
               init = function(gasCanRig)
@@ -224,14 +224,11 @@ return function()
           end)
         end
 
-        self.rig.fixture:destroy()
-        self.rig.body:destroy()
-        self.rig.body = nil
-        self.rig.fixture = nil
-        self:setState("Stopped")
         self.rig.sendEvent("killEnemy", {
           rig = self.rig
         })
+
+        self.rig:destroy()
       end
     }
   })

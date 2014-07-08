@@ -13,12 +13,19 @@ return {
         if self:waveIsClear() then
           self:nextWave()
         end
-    end)
+      end)
 
       level:loadPc()
 
       self:startWave()
       self.waveEndTimer:start()
+    end,
+
+    stop = function(self)
+      self.waveEndTimer:stop()
+      if self.waveTimer then
+        self.waveTimer:stop()
+      end
     end,
 
     startWave = function(self)

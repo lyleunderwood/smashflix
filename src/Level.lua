@@ -38,6 +38,7 @@ function Level:innerNew(o)
   }
 
   o.enemies = {}
+  o.rigs = {}
 
   setmetatable(o, self)
   self.__index = self
@@ -53,10 +54,13 @@ function Level:init()
 end
 
 function Level:initObjects()
+  self.worldObjects = {}
   for i = 1, #self.objects do
     local body = world:addBody(MOAIBox2DBody.STATIC)
     local fixture = body:addRect(unpack(self.objects[i].bb))
     fixture:setFilter(0x10, 0x000007)
+    table.insert(self.worldObjects, body)
+    table.insert(self.worldObjects, fixture)
   end
 end
 
@@ -87,12 +91,11 @@ function Level:killEnemy(rig)
     end
   end
   print("removing enemy:", #self.enemies)
-
-  return self:destroyRig(rig)
 end
 
 function Level:buildRig(key, init)
   local rig = RigFactory:build(key)
+  table.insert(self.rigs, rig)
   rig.sendEvent = function(name, opts)
     self:handleEvent(name, opts)
   end
@@ -106,6 +109,11 @@ end
 
 function Level:destroyRig(rig)
   self.layers.foreground:removeProp(rig.prop)
+  for k,v in pairs(self.rigs) do
+    if v == rig then
+      table.remove(self.rigs, k)
+    end
+  end
 end
 
 function Level:handleEvent(name, opts)
@@ -115,11 +123,43 @@ function Level:handleEvent(name, opts)
     self:destroyRig(opts.rig);
   elseif name == "killEnemy" then
     self:killEnemy(opts.rig);
+  elseif name == "pcDied" then
+    self:failure()
   end
+end
+
+function Level:failure()
+  self:stop()
 end
 
 function Level:start()
   self.behavior:start(self)
+  self.sendEvent("levelStarted")
+end
+
+function Level:stop()
+  self.behavior:stop()
+
+  for k = #self.rigs, 1, -1 do
+    local v = self.rigs[k]
+    if v then
+      if v.destroy and v.destroy then
+        v:destroy()
+      else
+        self:destroyRig(v)
+      end
+    end
+  end
+
+  self.enemies = {}
+
+  self.sendEvent("levelStopped")
+end
+
+function Level:destroy()
+  for k,v in pairs(self.worldObjects) do
+    v:destroy()
+  end
 end
 
 return Level

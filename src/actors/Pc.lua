@@ -298,14 +298,11 @@ return function()
       end,
 
       die = function(self)
-        self.rig.fixture:destroy()
-        self.rig.body:destroy()
-        self.rig.body = nil
-        self.rig.fixture = nil
-        self:setState("Stopped")
-        self.rig.sendEvent("destroyRig", {
-          rig = self.rig
-        })
+        self:stopFiring()
+        self.rig:destroy()
+        util.nextTick(self, function(self)
+          self.rig.sendEvent("pcDied")
+        end)
       end
     }
   })

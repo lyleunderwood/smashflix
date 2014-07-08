@@ -60,7 +60,8 @@ function LevelScreen:innerNew(o)
   o = o or {
     -- property defaults
     layers = nil,
-    level = nil
+    level = nil,
+    inputPaused = true
   }
 
   setmetatable(o, self)
@@ -71,20 +72,30 @@ end
 -- instance methods
 
 function LevelScreen:runLevel(key)
+  if key then
+    self.currentLevelKey = key
+  end
+
   self:stopLevel()
-  self.level = ResourceManager:get(key, "Level")
+  self.level = ResourceManager:get(self.currentLevelKey, "Level")
   self:startLevel()
 end
 
 function LevelScreen:stopLevel()
   if self.level then
     self.layers.background:removeProp(self.backgroundProp)
+    self.level:destroy()
   end
+
 
   self.level = nil
 end
 
 function LevelScreen:startLevel()
+  self.level.sendEvent = function(name, opts)
+    self:handleEvent(name, opts)
+  end
+
   self.level.layers = self.layers
   self.level:init()
   self.backgroundProp = MOAIProp2D.new()
@@ -93,10 +104,23 @@ function LevelScreen:startLevel()
   self.level:start()
 end
 
+function LevelScreen:handleEvent(name, opts)
+  if name == "levelStarted" then
+    self.inputPaused = false
+  elseif name == "levelStopped" then
+    self.inputPaused = true
+    self:runLevel()
+  end
+end
+
 function LevelScreen:handleKey(code, down)
   --io.stdout:write(string.format(code, down))
   --print(code)
   --print(down)
+
+  if self.inputPaused then
+    return
+  end
 
   action = keymap[code]
   if not action then

@@ -50,5 +50,11 @@ return {
     else
       return "en"
     end
+  end,
+
+  nextTick = function(self, cb)
+    MOAIThread:new():run(function()
+      cb(self)
+    end)
   end
 }

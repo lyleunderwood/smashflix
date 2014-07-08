@@ -84,4 +84,15 @@ function Rig:moveByDelta(delta)
   --self.body:setTransform(prop:getLoc())
 end
 
+function Rig:destroy()
+  self.behavior:setState("Stopped")
+  self.fixture:destroy()
+  self.body:destroy()
+  self.body = nil
+  self.fixture = nil
+  self.sendEvent("destroyRig", {
+    rig = self
+  })
+end
+
 return Rig
