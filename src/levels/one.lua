@@ -11,7 +11,11 @@ return {
       self.waveEndTimer:setMode(MOAITimer.LOOP)
       self.waveEndTimer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function()
         if self:waveIsClear() then
-          self:nextWave()
+          if self.currentWave == 4 then
+            self:success()
+          else
+            self:nextWave()
+          end
         end
       end)
 
@@ -52,6 +56,10 @@ return {
     nextWave = function(self)
       self.currentWave = self.currentWave + 1
       self:startWave()
+    end,
+
+    success = function(self)
+      self.level:success()
     end,
 
     newBum = function(self)

@@ -137,12 +137,18 @@ function Level:failure()
   end)
 end
 
+function Level:success()
+  util.afterDelay(2, function()
+    self:stop(true)
+  end)
+end
+
 function Level:start()
   self.behavior:start(self)
   self.sendEvent("levelStarted")
 end
 
-function Level:stop()
+function Level:stop(success)
   self.behavior:stop()
 
   for k = #self.rigs, 1, -1 do
@@ -158,7 +164,9 @@ function Level:stop()
 
   self.enemies = {}
 
-  self.sendEvent("levelStopped")
+  self.sendEvent("levelStopped", {
+    success = success
+  })
 end
 
 function Level:destroy()

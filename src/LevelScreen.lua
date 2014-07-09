@@ -109,7 +109,11 @@ function LevelScreen:handleEvent(name, opts)
     self.inputPaused = false
   elseif name == "levelStopped" then
     self.inputPaused = true
-    self:runLevel()
+    if opts.success then
+      self:complete()
+    else
+      self:runLevel()
+    end
   end
 end
 

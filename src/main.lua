@@ -55,6 +55,10 @@ levelScreen = LevelScreen:new({layers = {
   background = backgroundLayer, foreground = foregroundLayer
 }})
 
+levelScreen.complete = function()
+  os.exit()
+end
+
 levelScreen:runLevel("levels/one")
 
 local cb = function(...)
