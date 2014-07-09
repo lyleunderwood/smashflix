@@ -27,7 +27,7 @@ return {
   round = round,
 
   deepcopy = deepcopy,
-  
+
   bor = function(...)
     args = {...}
     local mask = 0

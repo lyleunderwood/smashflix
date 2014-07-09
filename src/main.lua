@@ -9,6 +9,8 @@ viewportRatio = viewportY / viewportX
 viewport = MOAIViewport.new ()
 viewport:setSize(viewportX, viewportY)
 viewport:setScale(640, 480)
+-- viewport:setOffset(0.5, 0)
+-- MOAISim.enterFullscreenMode()
 
 MOAIUntzSystem.initialize(44100, 2000)
 
