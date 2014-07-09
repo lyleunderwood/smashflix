@@ -287,6 +287,10 @@ return function()
       end,
 
       fire = function(self)
+        if not self.rig or not self.rig.body then
+          return
+        end
+
         self.fireSound:play()
 
         self.rig.sendEvent("buildRig", {

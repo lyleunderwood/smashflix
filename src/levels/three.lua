@@ -11,7 +11,7 @@ return {
       self.waveEndTimer:setMode(MOAITimer.LOOP)
       self.waveEndTimer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function()
         if self:waveIsClear() then
-          if self.currentWave == 1 then
+          if self.currentWave == 3 then
             self:success()
           else
             self:nextWave()
@@ -61,7 +61,7 @@ return {
     success = function(self)
       self.waveEndTimer:stop()
       self.level:success({
-        nextLevel = "two"
+        nextLevel = "four"
       })
     end,
 

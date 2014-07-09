@@ -1,3 +1,4 @@
+local ResourceManager = require "ResourceManager"
 local util = require "util"
 
 -- private methods are local functions here
@@ -69,12 +70,21 @@ function LevelScreen:innerNew(o)
   return o
 end
 
+function LevelScreen:start()
+  if self.firstLevel then
+    local key = "levels/"..(self.firstLevel)
+    self:runLevel(key)
+  end
+end
+
 -- instance methods
 
 function LevelScreen:runLevel(key)
   if key then
     self.currentLevelKey = key
   end
+
+  print("running level: "..self.currentLevelKey)
 
   self:stopLevel()
   self.level = ResourceManager:get(self.currentLevelKey, "Level")
@@ -109,8 +119,10 @@ function LevelScreen:handleEvent(name, opts)
     self.inputPaused = false
   elseif name == "levelStopped" then
     self.inputPaused = true
-    if opts.success then
-      self:complete()
+    if opts and opts.success then
+      if opts.nextLevel then
+        self:runLevel("levels/"..opts.nextLevel)
+      end
     else
       self:runLevel()
     end

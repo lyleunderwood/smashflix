@@ -66,13 +66,9 @@ function Level:initObjects()
 end
 
 function Level:loadPc(x, y)
-  self.pc = RigFactory:build("actors/Pc")
-  self.pc.sendEvent = function(name, opts)
-    self:handleEvent(name, opts)
-  end
-  self.pc:init()
-  self.layers.foreground:insertProp(self.pc.prop)
-  self.pc:start()
+  self.pc = self:buildRig("actors/Pc", function(rig)
+
+  end)
 end
 
 function Level:buildEnemy(key, init)
@@ -137,9 +133,10 @@ function Level:failure()
   end)
 end
 
-function Level:success()
+function Level:success(opts)
   util.afterDelay(2, function()
-    self:stop(true)
+    opts.success = true
+    self:stop(opts)
   end)
 end
 
@@ -148,7 +145,7 @@ function Level:start()
   self.sendEvent("levelStarted")
 end
 
-function Level:stop(success)
+function Level:stop(opts)
   self.behavior:stop()
 
   for k = #self.rigs, 1, -1 do
@@ -164,9 +161,7 @@ function Level:stop(success)
 
   self.enemies = {}
 
-  self.sendEvent("levelStopped", {
-    success = success
-  })
+  self.sendEvent("levelStopped", opts)
 end
 
 function Level:destroy()

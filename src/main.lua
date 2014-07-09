@@ -49,17 +49,18 @@ foregroundLayer:setBox2DWorld(world)
 ResourceManager = require "ResourceManager"
 LevelScreen = require "LevelScreen"
 
-level = ResourceManager:get("levels/one", "Level")
-
-levelScreen = LevelScreen:new({layers = {
-  background = backgroundLayer, foreground = foregroundLayer
-}})
+levelScreen = LevelScreen:new({
+  firstLevel = "one",
+  layers = {
+    background = backgroundLayer, foreground = foregroundLayer
+  }
+})
 
 levelScreen.complete = function()
   os.exit()
 end
 
-levelScreen:runLevel("levels/one")
+levelScreen:start()
 
 local cb = function(...)
   levelScreen:handleKey(...)

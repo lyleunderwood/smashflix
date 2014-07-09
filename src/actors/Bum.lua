@@ -244,6 +244,12 @@ return function()
       end,
 
       die = function(self)
+        if self.dead then
+          return
+        end
+
+        self.dead = true
+
         self.deathSound:play()
 
         self.changeDirectionTimer:stop()
