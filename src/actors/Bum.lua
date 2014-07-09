@@ -33,6 +33,14 @@ return function()
 
         self.currentHealth = self.startHealth
 
+        self.changeDirectionTimer = MOAITimer:new()
+        self.changeDirectionTimer:setSpan(JUNKYARD_DELAY)
+        self.changeDirectionTimer:setMode(MOAITimer.LOOP)
+        self.changeDirectionTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+          self:changeDirection()
+        end)
+        self.changeDirectionTimer:start()
+
         local behavior = self
         rig.fixture:setCollisionHandler(function(phase, bum, other, arbiter)
           behavior:takeDamage(other)
@@ -48,6 +56,7 @@ return function()
         self.rig = rig
         self:setState("Idle")
 
+        self:setInitialMovement()
       end,
 
       setState = function(self, state)
@@ -111,12 +120,12 @@ return function()
         end
       end,
 
-      updateMovement = function(self)
-        local time = MOAISim:getDeviceTime()
+      setInitialMovement = function(self)
+        self:setDirectionTowardPc()
+      end,
 
-        local length = (time - self.lastFrameTime) * BUM_BASE_SPEED
-
-        x, y = self.rig.body:getPosition()
+      setDirectionTowardPc = function(self)
+        local x, y = self.rig.body:getPosition()
         self.rig.pos.x = x
         self.rig.pos.y = y
         local pos = self.rig.pos
@@ -127,6 +136,32 @@ return function()
           right = pos.x < self.target.x,
           left = pos.x > self.target.x
         }
+      end,
+
+      changeDirection = function(self)
+        local dirInt = util.randInt(8)
+
+        if util.roll(JUNKYARD_RANDOMNESS) then
+          self:setDirectionTowardPc()
+        else
+          self.movement = {
+            up = dirInt == 0 or dirInt == 1 or dirInt == 7,
+            right = dirInt == 1 or dirInt == 2 or dirInt == 3,
+            down = dirInt == 3 or dirInt == 4 or dirInt == 5,
+            left = dirInt == 5 or dirInt == 6 or dirInt == 7
+          }
+        end
+      end,
+
+      updateMovement = function(self)
+        local time = MOAISim:getDeviceTime()
+
+        local length = (time - self.lastFrameTime) * BUM_BASE_SPEED
+
+        local x, y = self.rig.body:getPosition()
+        self.rig.pos.x = x
+        self.rig.pos.y = y
+        local pos = self.rig.pos
 
         self.rig:moveByDelta(self:buildMovementTransform(length))
 
@@ -211,6 +246,8 @@ return function()
       die = function(self)
         self.deathSound:play()
 
+        self.changeDirectionTimer:stop()
+
         if util.roll(4) then
           local px, py, z = self.rig.body:getPosition()
           util.nextTick(self, function(self)
@@ -229,6 +266,10 @@ return function()
         })
 
         self.rig:destroy()
+      end,
+
+      cleanup = function(self)
+        self.changeDirectionTimer:stop()
       end
     }
   })

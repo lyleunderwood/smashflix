@@ -19,10 +19,16 @@ local function deepcopy(orig)
     return copy
 end
 
+local function randInt(ceil)
+  return round(math.random() * ceil)
+end
+
 return {
   roll = function(ceil)
-    return round(math.random() * ceil) == 0
+    return randInt(ceil) == 0
   end,
+
+  randInt = randInt,
 
   round = round,
 

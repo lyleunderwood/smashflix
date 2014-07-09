@@ -75,11 +75,13 @@ function Level:loadPc(x, y)
 end
 
 function Level:buildEnemy(key, init)
-  local rig = self:buildRig(key, init)
+  local rig = self:buildRig(key, function(rig)
+    rig.behavior.target = self.pc.pos
+    init(rig)
+  end)
   table.insert(self.enemies, rig)
   print("adding enemy:", #self.enemies)
   rig:playAnimation("left")
-  rig.behavior.target = self.pc.pos
 
   return rig
 end

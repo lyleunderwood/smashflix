@@ -44,7 +44,7 @@ end
 
 function Rig:init()
   self.spritesheet = ResourceManager:get(self.spritesheetName, "Spritesheet")
-  --self.spritesheet:init()
+  -- self.spritesheet:init()
   self.prop = MOAIProp2D:new()
   self.prop:setDeck(self.spritesheet.deck)
   self.body = world:addBody(MOAIBox2DBody.DYNAMIC)
@@ -57,7 +57,7 @@ function Rig:init()
   self.body:setTransform(self.pos.x, self.pos.y, 0)
   self.prop:setAttrLink(MOAIProp2D.INHERIT_TRANSFORM, self.body, MOAIProp2D.TRANSFORM_TRAIT)
   self.fixture:setCollisionHandler(function(...)
-      self:handleCollision(...)
+    self:handleCollision(...)
   end)
 end
 
@@ -85,6 +85,10 @@ function Rig:moveByDelta(delta)
 end
 
 function Rig:destroy()
+  if self.behavior.cleanup then
+    self.behavior:cleanup()
+  end
+
   self.behavior:setState("Stopped")
   self.fixture:destroy()
   self.body:destroy()
