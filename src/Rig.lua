@@ -59,6 +59,10 @@ function Rig:init()
   self.fixture:setCollisionHandler(function(...)
     self:handleCollision(...)
   end)
+
+  if self.initBehavior then
+    self.initBehavior(self.behavior)
+  end
 end
 
 function Rig:handleCollision(...)

@@ -27,6 +27,10 @@ return function()
 
       speedBoost = 1,
 
+      damageBoost = 1,
+
+      rateBoost = 1,
+
       start = function(self, rig)
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
@@ -53,6 +57,22 @@ return function()
 
         self.speedBoostTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
           self.speedBoost = 1
+        end)
+
+        self.gunBoostTimer = MOAITimer:new()
+        self.gunBoostTimer:setSpan(DAMAGEBOOST_DURATION)
+        self.gunBoostTimer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function()
+          print("increasing damage")
+          self.damageBoost = DAMAGEBOOST_DAMAGE_MULTIPLIER
+          self.rateBoost = DAMAGEBOOST_RATE_MULTIPLIER
+          self.firingTimer:setSpan(PC_FIRE_DELAY / self.rateBoost)
+        end)
+
+        self.gunBoostTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+          print("resetting damage")
+          self.damageBoost = 1
+          self.rateBoost = 1
+          self.firingTimer:setSpan(PC_FIRE_DELAY * self.rateBoost)
         end)
 
         local behavior = self
@@ -283,7 +303,7 @@ return function()
             bulletRig.pos = {x = px, y = py}
             bulletRig.behavior.movement = mov
             bulletRig.initBehavior = function(behavior)
-
+              behavior.damageBoost = self.damageBoost
             end
           end
         })
@@ -294,6 +314,10 @@ return function()
           print("speedboost!")
           self.speedBoostTimer:setTime(0)
           self.speedBoostTimer:start()
+        elseif item.behavior.itemType == "gunboost" then
+          print("gunboost!")
+          self.gunBoostTimer:setTime(0)
+          self.gunBoostTimer:start()
         end
       end,
 

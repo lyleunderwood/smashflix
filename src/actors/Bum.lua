@@ -248,11 +248,23 @@ return function()
 
         self.changeDirectionTimer:stop()
 
-        if util.roll(4) then
+        local drop = util.randInt(8)
+        if drop == 0 then
           local px, py, z = self.rig.body:getPosition()
           util.nextTick(self, function(self)
             self.rig.sendEvent("buildRig", {
               key = "actors/GasCan",
+              init = function(gasCanRig)
+
+                gasCanRig.pos = {x = px, y = py}
+              end
+            })
+          end)
+        elseif drop == 1 then
+          local px, py, z = self.rig.body:getPosition()
+          util.nextTick(self, function(self)
+            self.rig.sendEvent("buildRig", {
+              key = "actors/Gun",
               init = function(gasCanRig)
 
                 gasCanRig.pos = {x = px, y = py}

@@ -8,6 +8,7 @@ return util.deepcopy({
   angle = 0,
   size = {w = 10, h = 7},
   behavior = {
+    damageBoost = 1,
     handleCollision = function(self, phase, us, them, arbiter)
       print(self, phase, us, them, arbiter)
     end,
@@ -127,7 +128,7 @@ return util.deepcopy({
     end,
 
     getDamage = function(self)
-      return PC_BULLET_DAMAGE
+      return PC_BULLET_DAMAGE * self.damageBoost
     end
   }
 })
