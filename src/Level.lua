@@ -1,4 +1,5 @@
 RigFactory = require "RigFactory"
+local util = require "util"
 -- private methods are local functions here
 
 -- class boilerplate stuff
@@ -131,7 +132,9 @@ function Level:handleEvent(name, opts)
 end
 
 function Level:failure()
-  self:stop()
+  util.afterDelay(2, function()
+    self:stop()
+  end)
 end
 
 function Level:start()

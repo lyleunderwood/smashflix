@@ -62,5 +62,14 @@ return {
     MOAIThread:new():run(function()
       cb(self)
     end)
+  end,
+
+  afterDelay = function(delay, cb)
+    local timer = MOAITimer:new()
+    timer:setSpan(delay)
+    timer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, cb)
+    timer:start()
+
+    return timer
   end
 }
