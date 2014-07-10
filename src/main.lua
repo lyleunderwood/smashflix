@@ -70,6 +70,6 @@ MOAIInputMgr.device.keyboard:setCallback(cb)
 
 local theme = ResourceManager:get("sounds/theme.wav", "Sound")
 theme:setLooping(true)
-theme:setLoopPoints(10.0, 15) --theme:getLength() - 0)
+theme:setLoopPoints(6.12, 76.9)
 theme:play()
 
