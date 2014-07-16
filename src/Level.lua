@@ -78,7 +78,7 @@ function Level:buildEnemy(key, init)
   end)
   table.insert(self.enemies, rig)
   print("adding enemy:", #self.enemies)
-  rig:playAnimation("left")
+  rig:playAnimation("walk")
 
   return rig
 end

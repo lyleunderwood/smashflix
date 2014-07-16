@@ -4,6 +4,11 @@ local util = require "util"
 return function()
   return util.deepcopy({
     spritesheetName = "spritesheets/bum",
+
+    getSpritesheetName = function()
+      return "spritesheets/bum"..(util.randInt(2)+1)..""
+    end,
+
     pos = {x = -0, y = -0},
     size = {w = 15, h = 30},
     behavior = {
@@ -105,18 +110,10 @@ return function()
 
         local mov = self.movement
 
-        if mov.right then
-          self.rig:playAnimation("right")
-        elseif mov.left then
-          self.rig:playAnimation("left")
-        elseif mov.up then
-          self.rig:playAnimation("up")
-        elseif mov.down then
-          self.rig:playAnimation("down")
-        end
-
         if not self:isMoving() then
           self.rig:playAnimation("idle")
+        else
+          self.rig:playAnimation("walk")
         end
       end,
 
@@ -150,6 +147,12 @@ return function()
             down = dirInt == 3 or dirInt == 4 or dirInt == 5,
             left = dirInt == 5 or dirInt == 6 or dirInt == 7
           }
+        end
+
+        if not self:isMoving() then
+          self.rig:playAnimation("idle")
+        else
+          self.rig:playAnimation("walk")
         end
       end,
 

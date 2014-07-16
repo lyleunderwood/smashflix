@@ -193,31 +193,31 @@ return function()
         local aimkey = ""
 
         if mov.right then
-          movkey = "right"
+          movkey = "E"
         elseif mov.left then
-          movkey = "left"
+          movkey = "W"
         elseif mov.up then
-          movkey = "up"
+          movkey = "N"
         elseif mov.down then
-          movkey = "down"
+          movkey = "S"
         end
 
         if self.aim.up then
-          aimkey = "up"
+          aimkey = "N"
         elseif self.aim.down then
-          aimkey = "down"
+          aimkey = "S"
         end
 
         if self.aim.right then
-          aimkey = aimkey.."right"
+          aimkey = aimkey.."E"
         elseif self.aim.left then
-          aimkey = aimkey.."left"
+          aimkey = aimkey.."W"
         end
 
         if movkey and not (aimkey == "") then
-          key = movkey.."_"..aimkey
+          key = aimkey..movkey
         elseif movkey then
-          key = movkey.."_"..movkey
+          key = movkey..movkey
         end
 
         if key then

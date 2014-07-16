@@ -160,7 +160,7 @@ return {
       return self.currentWaveDone and #self.level.enemies == 0
     end
   },
-  backgroundFilename = "images/Paddys.png",
+  backgroundFilename = "images/Paddys0000.png",
     objects = {
       {
         bb = {-300, 280, -350, -280}

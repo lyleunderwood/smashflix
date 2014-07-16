@@ -3,7 +3,7 @@ local util = require "../util"
 
 return function()
 return util.deepcopy({
-  spritesheetName = "spritesheets/playerBullet",
+  spritesheetName = "spritesheets/kornpop",
   pos = {x = -0, y = -0},
   angle = 0,
   size = {w = 10, h = 7},
@@ -62,7 +62,19 @@ return util.deepcopy({
     end,
 
     doFlyState = function(self)
-      self.rig:playAnimation("fly")
+      local mov = self.movement
+      local anim
+      if (mov.up and mov.right) or (mov.down and mov.left) then
+        anim = "diagright"
+      elseif (mov.up and mov.left) or (mov.down and mov.right) then
+        anim = "diagleft"
+      elseif mov.up or mov.down then
+        anim = "vertical"
+      else
+        anim = "horizontal"
+      end
+
+      self.rig:playAnimation(anim)
     end,
 
     doImpactState = function(self)
