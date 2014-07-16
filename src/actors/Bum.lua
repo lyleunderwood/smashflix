@@ -254,7 +254,7 @@ return function()
 
         self.changeDirectionTimer:stop()
 
-        local drop = util.randInt(8)
+        local drop = util.randInt(20)
         if drop == 0 then
           local px, py, z = self.rig.body:getPosition()
           util.nextTick(self, function(self)
