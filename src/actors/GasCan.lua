@@ -3,7 +3,7 @@ local util = require "util"
 
 return function()
 return util.deepcopy({
-  spritesheetName = "spritesheets/gasCan",
+  spritesheetName = "spritesheets/gascan",
   pos = {x = -0, y = -0},
   angle = 0,
   size = {w = 22, h = 29},

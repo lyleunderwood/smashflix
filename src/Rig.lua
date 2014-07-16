@@ -43,6 +43,10 @@ end
 -- instance methods
 
 function Rig:init()
+  if self.getSpritesheetName then
+    self.spritesheetName = self:getSpritesheetName()
+  end
+
   self.spritesheet = ResourceManager:get(self.spritesheetName, "Spritesheet")
   -- self.spritesheet:init()
   self.prop = MOAIProp2D:new()

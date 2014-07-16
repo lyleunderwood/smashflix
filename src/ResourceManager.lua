@@ -1,4 +1,5 @@
 Spritesheet = require "Spritesheet"
+TpSpritesheet = require "TpSpritesheet"
 Level = require "Level"
 
 -- private methods are local functions here
@@ -20,7 +21,8 @@ end
 
 function ResourceManager:loadSpritesheet(key)
   local data = require(key)
-  local spritesheet = Spritesheet:new(data)
+  local spritesheet
+  spritesheet = TpSpritesheet:new({def = data})
   spritesheet:init()
   return spritesheet
 end
