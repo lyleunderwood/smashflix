@@ -15,9 +15,9 @@ return function()
         left = false
       },
 
-      startHealth = BUM_HEALTH,
+      startHealth = NINJA_HEALTH,
 
-      currentHealth = BUM_HEALTH,
+      currentHealth = NINJA_HEALTH,
 
       target = {x = 360, y = 240},
 
