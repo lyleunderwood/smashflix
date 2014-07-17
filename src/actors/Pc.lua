@@ -35,7 +35,7 @@ return function()
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
         self.lastFrameTime = MOAISim:getDeviceTime()
-        rig.fixture:setFilter(COL_PC, util.bor(COL_WALL, COL_ENEMY, COL_PICKUP))
+        rig.fixture:setFilter(COL_PC, util.bor(COL_WALL, COL_ENEMY, COL_ENEMY_BULLET, COL_PICKUP))
 
         self.fireSound = ResourceManager:get("sounds/fire.wav", "Sound")
 
@@ -82,7 +82,7 @@ return function()
           else
             behavior:die()
           end
-        end, MOAIBox2DArbiter.BEGIN, util.bor(COL_ENEMY, COL_PICKUP))
+        end, MOAIBox2DArbiter.BEGIN, util.bor(COL_ENEMY, COL_PICKUP, COL_ENEMY_BULLET))
 
         self.movementThread:run(function()
             while not (self.state == "Stopped") do

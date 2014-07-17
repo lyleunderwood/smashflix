@@ -3,11 +3,7 @@ local util = require "util"
 
 return function()
   return util.deepcopy({
-    spritesheetName = "spritesheets/bum",
-
-    getSpritesheetName = function()
-      return "spritesheets/bum"..(util.randInt(2)+1)..""
-    end,
+    spritesheetName = "spritesheets/ninja",
 
     pos = {x = -0, y = -0},
     size = {w = 15, h = 30},
@@ -39,7 +35,7 @@ return function()
         self.currentHealth = self.startHealth
 
         self.changeDirectionTimer = MOAITimer:new()
-        self.changeDirectionTimer:setSpan(JUNKYARD_DELAY)
+        self.changeDirectionTimer:setSpan(0.6)
         self.changeDirectionTimer:setMode(MOAITimer.LOOP)
         self.changeDirectionTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
           self:changeDirection()
@@ -62,7 +58,8 @@ return function()
         self:setState("Idle")
 
         self:setInitialMovement()
-        self.rig:playAnimation("walk")
+        self.rig:playAnimation("flip")
+        self.wasMoving = true
       end,
 
       setState = function(self, state)
@@ -114,7 +111,7 @@ return function()
         if not self:isMoving() then
           self.rig:playAnimation("idle")
         else
-          self.rig:playAnimation("walk")
+          self.rig:playAnimation("flip")
         end
       end,
 
@@ -168,30 +165,42 @@ return function()
       end,
 
       changeDirection = function(self)
-        local dirInt = util.randInt(8)
+        local dirInt = util.randInt(7)
 
-        if util.roll(JUNKYARD_RANDOMNESS) then
-          self:setDirectionTowardPc()
-        else
+        if self.wasMoving then
           self.movement = {
-            up = dirInt == 0 or dirInt == 1 or dirInt == 7,
-            right = dirInt == 1 or dirInt == 2 or dirInt == 3,
-            down = dirInt == 3 or dirInt == 4 or dirInt == 5,
-            left = dirInt == 5 or dirInt == 6 or dirInt == 7
+            up = false,
+            down = false,
+            right = false,
+            left = false
           }
+          self.wasMoving = false
+          self:fire()
+        else
+          if util.roll(JUNKYARD_RANDOMNESS) then
+            self:setDirectionTowardPc()
+          else
+            self.movement = {
+              up = dirInt == 0 or dirInt == 1 or dirInt == 7,
+              right = dirInt == 1 or dirInt == 2 or dirInt == 3,
+              down = dirInt == 3 or dirInt == 4 or dirInt == 5,
+              left = dirInt == 5 or dirInt == 6 or dirInt == 7
+            }
+          end
+          self.wasMoving = true
         end
 
         if not self:isMoving() then
           self.rig:playAnimation("idle")
         else
-          self.rig:playAnimation("walk")
+          self.rig:playAnimation("flip")
         end
       end,
 
       updateMovement = function(self)
         local time = MOAISim:getDeviceTime()
 
-        local length = (time - self.lastFrameTime) * BUM_BASE_SPEED
+        local length = (time - self.lastFrameTime) * NINJA_BASE_SPEED
 
         local x, y = self.rig.body:getPosition()
         self.rig.pos.x = x
@@ -207,24 +216,24 @@ return function()
         local mov = self.movement
         local delta = MOAITransform:new()
 
-        local angular = math.sqrt(BUM_BASE_SPEED * BUM_BASE_SPEED / 2)
+        local angular = math.sqrt(NINJA_BASE_SPEED * NINJA_BASE_SPEED / 2)
 
         if mov.up and mov.right then
           self.rig.body:setLinearVelocity(angular, angular)
         elseif mov.up and mov.left then
           self.rig.body:setLinearVelocity(-angular, angular)
         elseif mov.up then
-          self.rig.body:setLinearVelocity(0, BUM_BASE_SPEED)
+          self.rig.body:setLinearVelocity(0, NINJA_BASE_SPEED)
         elseif mov.down and mov.right then
           self.rig.body:setLinearVelocity(angular, -angular)
         elseif mov.down and mov.left then
           self.rig.body:setLinearVelocity(-angular, -angular)
         elseif mov.down then
-          self.rig.body:setLinearVelocity(0, -BUM_BASE_SPEED)
+          self.rig.body:setLinearVelocity(0, -NINJA_BASE_SPEED)
         elseif mov.right then
-          self.rig.body:setLinearVelocity(BUM_BASE_SPEED, 0)
+          self.rig.body:setLinearVelocity(NINJA_BASE_SPEED, 0)
         elseif mov.left then
-          self.rig.body:setLinearVelocity(-BUM_BASE_SPEED, 0)
+          self.rig.body:setLinearVelocity(-NINJA_BASE_SPEED, 0)
         else
           self.rig.body:setLinearVelocity(0, 0)
         end
@@ -245,24 +254,52 @@ return function()
       end,
 
       fire = function(self)
-        self.rig.sendEvent("buildRig", {
-          key = "actors/PlayerBullet",
-          init = function(bulletRig)
-            local px, py, z = self.rig.body:getPosition()
+        if not self.rig or not self.rig.body then
+          return
+        end
 
-            mov = {}
-            mov.left = self.movement.left
-            mov.right = self.movement.right
-            mov.up = self.movement.up
-            mov.down = self.movement.down
+        local px, py, z = self.rig.body:getPosition()
 
-            bulletRig.pos = {x = px, y = py}
-            bulletRig.behavior.movement = mov
-            bulletRig.initBehavior = function(behavior)
+        local angle = self:getAngleToPc()  - (3 * (math.pi / 8))
 
+        local dir = util.round(angle * 2 / math.pi)
+
+        local mov1 = {
+          down = dir == 0,
+          right = dir == 1,
+          up = dir == 2,
+          left = dir >= 3 or dir < 0
+        }
+
+        local mov2 = {
+          down = dir == 0 or dir == 1,
+          right = dir == 1 or dir == 2,
+          up = dir == 2 or dir >= 3 or dir < 0,
+          left = dir >= 3 or dir <= 0
+        }
+
+        local mov3 = {
+          down = dir >= 3 or dir <= 0,
+          right = dir == 1 or dir == 0,
+          up = dir == 2 or dir == 1,
+          left = dir >= 3 or dir == 2
+        }
+
+        local moves = {mov1, mov2, mov3}
+
+        for k,mov in pairs(moves) do
+
+          self.rig.sendEvent("buildRig", {
+            key = "actors/NinjaStar",
+            init = function(bulletRig)
+
+              bulletRig.pos = {x = px, y = py}
+              bulletRig.behavior.movement = mov
+              bulletRig.initBehavior = function(behavior)
+              end
             end
-          end
-        })
+          })
+        end
       end,
 
       takeDamage = function(self, bullet)

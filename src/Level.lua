@@ -59,7 +59,7 @@ function Level:initObjects()
   for i = 1, #self.objects do
     local body = world:addBody(MOAIBox2DBody.STATIC)
     local fixture = body:addRect(unpack(self.objects[i].bb))
-    fixture:setFilter(0x10, 0x000007)
+    fixture:setFilter(COL_WALL, util.bor(COL_PC, COL_PC_BULLET, COL_ENEMY, COL_ENEMY_BULLET, COL_PICKUP))
     table.insert(self.worldObjects, body)
     table.insert(self.worldObjects, fixture)
   end
@@ -78,7 +78,7 @@ function Level:buildEnemy(key, init)
   end)
   table.insert(self.enemies, rig)
   print("adding enemy:", #self.enemies)
-  rig:playAnimation("walk")
+  -- rig:playAnimation("walk")
 
   return rig
 end
