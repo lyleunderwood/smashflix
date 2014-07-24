@@ -6,7 +6,7 @@ return util.deepcopy({
   spritesheetName = "spritesheets/kornpop",
   pos = {x = -0, y = -0},
   angle = 0,
-  size = {w = 10, h = 7},
+  size = {w = 5, h = 5},
   behavior = {
     damageBoost = 1,
     handleCollision = function(self, phase, us, them, arbiter)
