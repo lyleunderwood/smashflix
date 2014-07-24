@@ -340,7 +340,7 @@ return function()
 
         self.deathSound:play()
 
-        local drop = util.randInt(20)
+        local drop = util.randInt(NINJA_DROP_SIDES * 2)
         if drop == 0 then
           local px, py, z = self.rig.body:getPosition()
           util.nextTick(self, function(self)

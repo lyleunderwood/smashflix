@@ -289,7 +289,7 @@ return function()
 
         self.changeDirectionTimer:stop()
 
-        local drop = util.randInt(20)
+        local drop = util.randInt(BUM_DROP_SIDES)
         if drop == 0 then
           local px, py, z = self.rig.body:getPosition()
           util.nextTick(self, function(self)
