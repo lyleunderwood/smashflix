@@ -23,6 +23,8 @@ return function()
 
       isEnemy = true,
 
+      handles = {},
+
       start = function(self, rig)
         self.movementAction = MOAIAction:new():start()
         self.movementThread = MOAIThread:new()
@@ -33,14 +35,6 @@ return function()
         self.deathSound = ResourceManager:get("sounds/scream.wav", "Sound")
 
         self.currentHealth = self.startHealth
-
-        self.changeDirectionTimer = MOAITimer:new()
-        self.changeDirectionTimer:setSpan(0.6)
-        self.changeDirectionTimer:setMode(MOAITimer.LOOP)
-        self.changeDirectionTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
-          self:changeDirection()
-        end)
-        self.changeDirectionTimer:start()
 
         local behavior = self
         rig.fixture:setCollisionHandler(function(phase, bum, other, arbiter)
@@ -55,7 +49,7 @@ return function()
           end
         )
         self.rig = rig
-        self:setState("Idle")
+        self:setState("Walk")
 
         self:setInitialMovement()
         self.rig:playAnimation("flip")
@@ -77,8 +71,63 @@ return function()
         self.rig:playAnimation("idle")
       end,
 
-      doMovingState = function(self)
+      doWalkState = function(self)
+        if util.roll(JUNKYARD_RANDOMNESS) then
+          self:setDirectionTowardPc()
+        else
+          local dirInt = util.randInt(7)
+          self.movement = {
+            up = dirInt == 0 or dirInt == 1 or dirInt == 7,
+            right = dirInt == 1 or dirInt == 2 or dirInt == 3,
+            down = dirInt == 3 or dirInt == 4 or dirInt == 5,
+            left = dirInt == 5 or dirInt == 6 or dirInt == 7
+          }
+        end
+        self.rig:playAnimation("flip")
 
+        if not self.walkTimer then
+          self.walkTimer = MOAITimer:new()
+          self.walkTimer:setSpan(0.6)
+          self.walkTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+            self:setState("Stop")
+          end)
+          table.insert(self.handles, self.walkTimer)
+        end
+
+        self.walkTimer:start()
+      end,
+
+      doStopState = function(self)
+        self.movement = {
+          up = false,
+          down = false,
+          right = false,
+          left = false
+        }
+        self.wasMoving = false
+
+        if not self.stopTimer then
+          self.stopTimer = MOAITimer:new()
+          self.stopTimer:setSpan(NINJA_STOP_DELAY)
+          self.stopTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+            self:setState("Walk")
+          end)
+          table.insert(self.handles, self.stopTimer)
+        end
+
+        if not self.fireTimer then
+          self.fireTimer = MOAITimer:new()
+          self.fireTimer:setSpan(NINJA_FIRE_DELAY)
+          self.fireTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+            self:fire()
+          end)
+          table.insert(self.handles, self.fireTimer)
+        end
+
+        self.rig:playAnimation("idle")
+
+        self.fireTimer:start()
+        self.stopTimer:start()
       end,
 
       startMovement = function(self, dir)
@@ -162,39 +211,6 @@ return function()
 
       setDirectionTowardPc = function(self)
         self.movement = self:getMoveToPc()
-      end,
-
-      changeDirection = function(self)
-        local dirInt = util.randInt(7)
-
-        if self.wasMoving then
-          self.movement = {
-            up = false,
-            down = false,
-            right = false,
-            left = false
-          }
-          self.wasMoving = false
-          self:fire()
-        else
-          if util.roll(JUNKYARD_RANDOMNESS) then
-            self:setDirectionTowardPc()
-          else
-            self.movement = {
-              up = dirInt == 0 or dirInt == 1 or dirInt == 7,
-              right = dirInt == 1 or dirInt == 2 or dirInt == 3,
-              down = dirInt == 3 or dirInt == 4 or dirInt == 5,
-              left = dirInt == 5 or dirInt == 6 or dirInt == 7
-            }
-          end
-          self.wasMoving = true
-        end
-
-        if not self:isMoving() then
-          self.rig:playAnimation("idle")
-        else
-          self.rig:playAnimation("flip")
-        end
       end,
 
       updateMovement = function(self)
@@ -324,8 +340,6 @@ return function()
 
         self.deathSound:play()
 
-        self.changeDirectionTimer:stop()
-
         local drop = util.randInt(20)
         if drop == 0 then
           local px, py, z = self.rig.body:getPosition()
@@ -359,7 +373,9 @@ return function()
       end,
 
       cleanup = function(self)
-        self.changeDirectionTimer:stop()
+        for k, timer in pairs(self.handles) do
+          timer:stop()
+        end
       end
     }
   })
