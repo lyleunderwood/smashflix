@@ -159,7 +159,7 @@ return {
       if event.S then
         for k,v in pairs(event.S) do
           self.level:buildEnemy("actors/"..v, function(rig)
-            rig.pos = {x = 0, y = -180}
+            rig.pos = {x = 0, y = -220}
           end)
         end
       end
