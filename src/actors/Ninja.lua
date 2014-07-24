@@ -87,7 +87,7 @@ return function()
 
         if not self.walkTimer then
           self.walkTimer = MOAITimer:new()
-          self.walkTimer:setSpan(0.6)
+          self.walkTimer:setSpan(NINJA_FLIP_TIME)
           self.walkTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
             self:setState("Stop")
           end)
