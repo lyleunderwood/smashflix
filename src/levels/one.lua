@@ -2,7 +2,7 @@ return {
   behavior = {
     waves = {
       {
-        { time = 1, N = {"Priest"} },
+        { time = 1, N = {"Zombie"} },
       },
       {
         { time = 1, N = {"Bum"} },
