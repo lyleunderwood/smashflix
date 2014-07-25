@@ -5,6 +5,9 @@ return {
         { time = 1, N = {"Zombie"} },
       },
       {
+        { time = 1, N = {"Priest"} },
+      },
+      {
         { time = 1, N = {"Bum"} },
         { time = 2, S = {"Bum"} },
         { time = 3, E = {"Bum"} },

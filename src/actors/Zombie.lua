@@ -22,8 +22,13 @@ return function()
 
       isEnemy = true,
 
+      dead = false,
+
+      speedBoost = 1,
+
+      canCharge = true,
+
       start = function(self, rig)
-        self.movementThread = MOAIThread:new()
         self.lastFrameTime = MOAISim:getDeviceTime()
         rig.fixture:setFilter(COL_ENEMY, util.bor(COL_WALL, COL_PC, COL_PC_BULLET, COL_ENEMY))
         rig.fixture.behavior = self
@@ -37,6 +42,10 @@ return function()
           behavior:takeDamage(other)
         end, MOAIBox2DArbiter.BEGIN, COL_PC_BULLET)
 
+        self.rig = rig
+        self:setState("Walk")
+
+        self.movementThread = MOAIThread:new()
         self.movementThread:run(function()
             while not (self.state == "Stopped") do
               self:updateMovement()
@@ -44,8 +53,6 @@ return function()
             end
           end
         )
-        self.rig = rig
-        self:setState("Idle")
 
         self.rig:playAnimation("walk")
       end,
@@ -65,8 +72,70 @@ return function()
         self.rig:playAnimation("idle")
       end,
 
-      doMovingState = function(self)
+      doWalkState = function(self)
+        print("walk")
+        self.autoMove = true
+        self.speedBoost = 1
+        self.rig:playAnimation("walk")
+      end,
 
+      doPauseState = function(self)
+        print("pause")
+        self.autoMove = false
+        self.movement = {
+          up = false,
+          down = false,
+          left = false,
+          right = false
+        }
+
+        self.rig:playAnimation("idle")
+
+        if not self.pauseTimer then
+          self.pauseTimer = MOAITimer:new()
+          self.pauseTimer:setSpan(ZOMBIE_PAUSE_DELAY)
+          self.pauseTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+            self:setState("Charge")
+          end)
+        end
+
+        self.pauseTimer:start()
+      end,
+
+      doChargeState = function(self)
+        self:setDirectionTowardPc()
+        self.speedBoost = ZOMBIE_CHARGE_MULT
+        self.canCharge = false
+
+        self.rig:playAnimation("walk")
+
+        if not self.chargeTimer then
+          self.chargeTimer = MOAITimer:new()
+          self.chargeTimer:setSpan(ZOMBIE_CHARGE_DELAY)
+          self.chargeTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+            self:setState("Walk")
+            self.cooldownTimer:start()
+          end)
+        end
+
+        if not self.cooldownTimer then
+          self.cooldownTimer = MOAITimer:new()
+          self.cooldownTimer:setSpan(ZOMBIE_COOLDOWN_TIME)
+          self.cooldownTimer:setListener(MOAITimer.EVENT_TIMER_END_SPAN, function()
+            self.canCharge = true
+          end)
+        end
+
+        self.chargeTimer:start()
+      end,
+
+      withinPlayerRange = function(self)
+        local x, y = self.rig.body:getPosition()
+        local xDist = self.target.x - x
+        local yDist = self.target.y - y
+        local dist = math.sqrt(math.pow(xDist, 2) + math.pow(yDist, 2))
+
+        return dist < 200
       end,
 
       startMovement = function(self, dir)
@@ -166,7 +235,12 @@ return function()
         self.rig.pos.y = y
         local pos = self.rig.pos
 
-        self:setDirectionTowardPc()
+        if self.autoMove then
+          self:setDirectionTowardPc()
+          if self.withinPlayerRange(self) and self.canCharge then
+            self:setState("Pause")
+          end
+        end
 
         self.rig:moveByDelta(self:buildMovementTransform(length))
 
@@ -179,22 +253,25 @@ return function()
 
         local angular = math.sqrt(ZOMBIE_BASE_SPEED * ZOMBIE_BASE_SPEED / 2)
 
+        local speed = ZOMBIE_BASE_SPEED * self.speedBoost
+        local angularSpeed = angular * self.speedBoost
+
         if mov.up and mov.right then
-          self.rig.body:setLinearVelocity(angular, angular)
+          self.rig.body:setLinearVelocity(angularSpeed, angularSpeed)
         elseif mov.up and mov.left then
-          self.rig.body:setLinearVelocity(-angular, angular)
+          self.rig.body:setLinearVelocity(-angularSpeed, angularSpeed)
         elseif mov.up then
-          self.rig.body:setLinearVelocity(0, ZOMBIE_BASE_SPEED)
+          self.rig.body:setLinearVelocity(0, speed)
         elseif mov.down and mov.right then
-          self.rig.body:setLinearVelocity(angular, -angular)
+          self.rig.body:setLinearVelocity(angularSpeed, -angularSpeed)
         elseif mov.down and mov.left then
-          self.rig.body:setLinearVelocity(-angular, -angular)
+          self.rig.body:setLinearVelocity(-angularSpeed, -angularSpeed)
         elseif mov.down then
-          self.rig.body:setLinearVelocity(0, -ZOMBIE_BASE_SPEED)
+          self.rig.body:setLinearVelocity(0, -speed)
         elseif mov.right then
-          self.rig.body:setLinearVelocity(ZOMBIE_BASE_SPEED, 0)
+          self.rig.body:setLinearVelocity(speed, 0)
         elseif mov.left then
-          self.rig.body:setLinearVelocity(-ZOMBIE_BASE_SPEED, 0)
+          self.rig.body:setLinearVelocity(-speed, 0)
         else
           self.rig.body:setLinearVelocity(0, 0)
         end
@@ -270,6 +347,15 @@ return function()
 
       cleanup = function(self)
         self.movementThread:stop()
+        if self.pauseTimer then
+          self.pauseTimer:stop()
+        end
+        if self.chargeTimer then
+          self.chargeTimer:stop()
+        end
+        if self.cooldownTimer then
+          self.cooldownTimer:stop()
+        end
       end
     }
   })
