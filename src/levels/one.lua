@@ -2,17 +2,6 @@ return {
   behavior = {
     waves = {
       {
-        { time = 1, N = {"Zombie"}, S = {"Priest"}, E = {"Ninja"} },
-        { time = 2, S = {"Bum"} },
-        { time = 3, E = {"Bum"} },
-        { time = 4, W = {"Bum"} },
-        { time = 5, N = {"Bum"} },
-        { time = 6, S = {"Bum"} },
-      },
-      {
-        { time = 1, N = {"Priest"} },
-      },
-      {
         { time = 1, N = {"Bum"} },
         { time = 2, S = {"Bum"} },
         { time = 3, E = {"Bum"} },
@@ -46,7 +35,6 @@ return {
         { time = 16, E = {"Bum"}, W = {"Bum"}, N = {"Bum"} },
         { time = 18.5, E = {"Bum"}, W = {"Bum"}, S = {"Bum"} },
         { time = 21, E = {"Bum"}, W = {"Bum"}, N = {"Bum"}, S = {"Bum"} },
-        { time = 23.5, E = {"Bum"}, W = {"Bum"}, S = {"Bum"}, N = {"Bum"} },
       },
     },
 
