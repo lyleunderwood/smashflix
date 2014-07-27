@@ -59,7 +59,22 @@ function Level:initObjects()
   for i = 1, #self.objects do
     local body = world:addBody(MOAIBox2DBody.STATIC)
     local fixture = body:addRect(unpack(self.objects[i].bb))
-    fixture:setFilter(COL_WALL, util.bor(COL_PC, COL_PC_BULLET, COL_ENEMY, COL_ENEMY_BULLET, COL_PICKUP))
+    if self.objects[i].playerOnly then
+      fixture:setFilter(COL_WALL, util.bor(
+        COL_PC,
+        COL_PC_BULLET,
+        COL_ENEMY_BULLET,
+        COL_PICKUP
+      ))
+    else
+      fixture:setFilter(COL_WALL, util.bor(
+        COL_PC,
+        COL_PC_BULLET,
+        COL_ENEMY,
+        COL_ENEMY_BULLET,
+        COL_PICKUP
+      ))
+    end
     table.insert(self.worldObjects, body)
     table.insert(self.worldObjects, fixture)
   end

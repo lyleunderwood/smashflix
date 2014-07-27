@@ -130,28 +130,28 @@ return {
       if event.N then
         for k,v in pairs(event.N) do
           self.level:buildEnemy("actors/"..v, function(rig)
-            rig.pos = {x = 0, y = 200}
+            rig.pos = {x = 0, y = 210}
           end)
         end
       end
       if event.W then
         for k,v in pairs(event.W) do
           self.level:buildEnemy("actors/"..v, function(rig)
-            rig.pos = {x = -280, y = 0}
+            rig.pos = {x = -320, y = 0}
           end)
         end
       end
       if event.E then
         for k,v in pairs(event.E) do
           self.level:buildEnemy("actors/"..v, function(rig)
-            rig.pos = {x = 280, y = 0}
+            rig.pos = {x = 320, y = 0}
           end)
         end
       end
       if event.S then
         for k,v in pairs(event.S) do
           self.level:buildEnemy("actors/"..v, function(rig)
-            rig.pos = {x = 0, y = -220}
+            rig.pos = {x = 0, y = -250}
           end)
         end
       end
@@ -163,18 +163,63 @@ return {
   },
   backgroundFilename = "images/Paddys.png",
     objects = {
+      -- western walls
       {
-        bb = {-300, 280, -350, -280}
+        bb = {-300, 280, -350, 20}
       },
       {
-        bb = {300, 280, 350, -280}
+        bb = {-300, -20, -350, -280}
       },
       {
-        bb = {300, 200, -300, 230}
+        bb = {-370, 20, -350, -20}
       },
       {
-        bb = {300, -230, -300, -250}
+        bb = {-300, 20, -350, -20},
+        playerOnly = true
       },
+      -- eastern walls
+      {
+        bb = {300, 280, 350, 20}
+      },
+      {
+        bb = {300, -20, 350, -280}
+      },
+      {
+        bb = {370, 20, 350, -20}
+      },
+      {
+        bb = {300, 20, 350, -20},
+        playerOnly = true
+      },
+      -- northern walls
+      {
+        bb = {-20, 190, -300, 230}
+      },
+      {
+        bb = {20, 190, 300, 230}
+      },
+      {
+        bb = {-20, 230, 20, 250}
+      },
+      {
+        bb = {-20, 190, 20, 230},
+        playerOnly = true
+      },
+      -- southern walls
+      {
+        bb = {-20, -230, -300, -270}
+      },
+      {
+        bb = {20, -230, 300, -270}
+      },
+      {
+        bb = {-20, -270, 20, -290}
+      },
+      {
+        bb = {-20, -230, 20, -270},
+        playerOnly = true
+      },
+      -- other junk
       {
         bb = {-270, 165, -70, 100}
       },
