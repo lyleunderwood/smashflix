@@ -66,7 +66,9 @@ local cb = function(...)
   levelScreen:handleKey(...)
 end
 
-MOAIInputMgr.device.keyboard:setCallback(cb)
+if MOAIInputMgr.device.keyboard then
+  MOAIInputMgr.device.keyboard:setCallback(cb)
+end
 
 local theme = ResourceManager:get("sounds/theme.wav", "Sound")
 theme:setLooping(true)
