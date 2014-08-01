@@ -75,6 +75,18 @@ function LevelScreen:start()
     local key = "levels/"..(self.firstLevel)
     self:runLevel(key)
   end
+
+  if MOAIInputMgr.device.keyboard then
+    MOAIInputMgr.device.keyboard:setCallback(function(...)
+      self:handleKey(...)
+    end)
+  end
+
+  if MOAIInputMgr.device.touch then
+    MOAIInputMgr.device.touch:setCallback(function(...)
+      self:handleTouch(...)
+    end)
+  end
 end
 
 -- instance methods
@@ -154,6 +166,10 @@ function LevelScreen:handleKey(code, down)
   end
 
   method(self)
+end
+
+function LevelScreen:handleTouch(eventType, idx, x, y, tapCount)
+  print("eventType: "..tostring(eventType).." idx: "..tostring(idx).." x: "..tostring(x).." y: "..tostring(y).." tapCount: "..tostring(tapCount))
 end
 
 function LevelScreen:startMoveUp()
