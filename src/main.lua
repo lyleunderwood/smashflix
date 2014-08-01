@@ -63,6 +63,8 @@ levelScreen = LevelScreen:new({
   }
 })
 
+levelScreen:setWindowCoords(viewportX, viewportY)
+
 levelScreen.complete = function()
   os.exit()
 end
