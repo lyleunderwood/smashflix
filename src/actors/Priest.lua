@@ -3,7 +3,7 @@ local util = require "util"
 
 return function()
   return util.deepcopy({
-    spritesheetName = "spritesheets/ninja",
+    spritesheetName = "spritesheets/priest",
 
     pos = {x = -0, y = -0},
     size = {w = 15, h = 30},
