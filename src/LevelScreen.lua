@@ -190,7 +190,6 @@ function LevelScreen:handleTouch(eventType, idx, x, y, tapCount)
 end
 
 function LevelScreen:touchStart(idx, x, y)
-  print("touchStart: "..tostring(idx).." x: "..tostring(x).." y: "..tostring(y))
   self.touches[idx] = {
     start = {x = x, y = y},
     current = {x = x, y = y}
@@ -204,7 +203,6 @@ function LevelScreen:touchStart(idx, x, y)
 end
 
 function LevelScreen:touchMove(idx, x, y)
-  print("touchMove: "..tostring(idx).." x: "..tostring(x).." y: "..tostring(y))
   local touch = self.touches[idx]
   touch.current = {x = x, y = y}
 
@@ -215,24 +213,25 @@ function LevelScreen:touchMove(idx, x, y)
     end
   elseif idx == self.aimTouchId then
     local mov = self:getMovementFromTouches(touch.start, touch.current)
-    if not self:movementCompare(self.level.pc.behavior.movement, mov) then
+    if not self:movementCompare(self.level.pc.behavior.aim, mov) then
       self.level.pc.behavior:setAim(mov)
     end
   end
 end
 
 function LevelScreen:movementCompare(movA, movB)
-  return movA.up == movB.up and movA.down == movB.down and movA.left == movA.left and movA.right == movB.right
+  return movA.up == movB.up and movA.down == movB.down and movA.left == movB.left and movA.right == movB.right
 end
 
 function LevelScreen:touchStop(idx, x, y)
-  print("touchStop: "..tostring(idx).." x: "..tostring(x).." y: "..tostring(y))
   local touch = self.touches[idx]
 
   if idx == self.movementTouchId then
     self.level.pc.behavior:setMovement({})
+    self.movementTouchId = nil
   elseif idx == self.aimTouchId then
     self.level.pc.behavior:setAim({})
+    self.aimTouchId = nil
   end
 end
 
