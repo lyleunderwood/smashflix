@@ -8,7 +8,7 @@ return {
 	texture = 'ninjastar.png',
 	frames = {
 			{
-				name = "Shuruken1.png",
+				name = "vertical/Shuruken1.png",
 				spriteColorRect = { x = 0, y = 0, width = 25, height = 25 },
 				uvRect = { u0 = 0.517857, v0 = 0.0689655, u1 = 0.964286, v1 = 0.931035 },
 				spriteSourceSize = { width = 25, height = 25 },
@@ -16,7 +16,23 @@ return {
 				textureRotated = false
 			},
 			{
-				name = "Shuruken2.png",
+				name = "diagright/Shuruken1.png",
+				spriteColorRect = { x = 0, y = 0, width = 25, height = 25 },
+				uvRect = { u0 = 0.517857, v0 = 0.0689655, u1 = 0.964286, v1 = 0.931035 },
+				spriteSourceSize = { width = 25, height = 25 },
+				spriteTrimmed = false,
+				textureRotated = false
+			},
+			{
+				name = "diagleft/Shuruken1.png",
+				spriteColorRect = { x = 0, y = 0, width = 25, height = 25 },
+				uvRect = { u0 = 0.517857, v0 = 0.0689655, u1 = 0.964286, v1 = 0.931035 },
+				spriteSourceSize = { width = 25, height = 25 },
+				spriteTrimmed = false,
+				textureRotated = false
+			},
+			{
+				name = "horizontal/Shuruken2.png",
 				spriteColorRect = { x = 0, y = 0, width = 25, height = 25 },
 				uvRect = { u0 = 0.0357143, v0 = 0.0689655, u1 = 0.482143, v1 = 0.931035 },
 				spriteSourceSize = { width = 25, height = 25 },

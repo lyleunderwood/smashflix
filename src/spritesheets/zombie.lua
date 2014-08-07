@@ -8,7 +8,7 @@ return {
 	texture = 'zombie.png',
 	frames = {
 			{
-				name = "Zombie_Base.png",
+				name = "walk/Zombie_Base.png",
 				spriteColorRect = { x = 10, y = 10, width = 30, height = 38 },
 				uvRect = { u0 = 0.692308, v0 = 0.04, u1 = 0.980769, v1 = 0.8 },
 				spriteSourceSize = { width = 50, height = 50 },
@@ -16,7 +16,7 @@ return {
 				textureRotated = false
 			},
 			{
-				name = "Zombie_Charge.png",
+				name = "pause/Zombie_Charge.png",
 				spriteColorRect = { x = 3, y = 11, width = 46, height = 36 },
 				uvRect = { u0 = 0.0192308, v0 = 0.04, u1 = 0.365385, v1 = 0.96 },
 				spriteSourceSize = { width = 50, height = 50 },
