@@ -75,6 +75,18 @@ function LevelScreen:start()
     local key = "levels/"..(self.firstLevel)
     self:runLevel(key)
   end
+
+  if MOAIInputMgr.device.keyboard then
+    MOAIInputMgr.device.keyboard:setCallback(function(...)
+      self:handleKey(...)
+    end)
+  end
+
+  if MOAIInputMgr.device.touch then
+    MOAIInputMgr.device.touch:setCallback(function(...)
+      self:handleTouch(...)
+    end)
+  end
 end
 
 -- instance methods
@@ -112,6 +124,13 @@ function LevelScreen:startLevel()
   self.backgroundProp:setDeck(self.level.background)
   self.layers.background:insertProp(self.backgroundProp)
   self.level:start()
+end
+
+function LevelScreen:setWindowCoords(width, height)
+  self.windowCoords = {
+    width = width,
+    height = height
+  }
 end
 
 function LevelScreen:handleEvent(name, opts)
@@ -154,6 +173,104 @@ function LevelScreen:handleKey(code, down)
   end
 
   method(self)
+end
+
+function LevelScreen:handleTouch(eventType, idx, x, y, tapCount)
+  if not self.touches then
+    self.touches = {}
+  end
+
+  if eventType == MOAITouchSensor.TOUCH_DOWN then
+    self:touchStart(idx, x, y)
+  elseif eventType == MOAITouchSensor.TOUCH_MOVE then
+    self:touchMove(idx, x, y)
+  elseif eventType == MOAITouchSensor.TOUCH_UP or eventType == MOAITouchSensor.TOUCH_CANCEL then
+    self:touchStop(idx, x, y)
+  end
+end
+
+function LevelScreen:touchStart(idx, x, y)
+  self.touches[idx] = {
+    start = {x = x, y = y},
+    current = {x = x, y = y}
+  }
+
+  if x < self.windowCoords.width / 2 then
+    self.movementTouchId = idx
+  else
+    self.aimTouchId = idx
+  end
+end
+
+function LevelScreen:touchMove(idx, x, y)
+  local touch = self.touches[idx]
+  touch.current = {x = x, y = y}
+
+  if idx == self.movementTouchId then
+    local mov = self:getMovementFromTouches(touch.start, touch.current)
+    if not self:movementCompare(self.level.pc.behavior.movement, mov) then
+      self.level.pc.behavior:setMovement(mov)
+    end
+  elseif idx == self.aimTouchId then
+    local mov = self:getMovementFromTouches(touch.start, touch.current)
+    if not self:movementCompare(self.level.pc.behavior.aim, mov) then
+      self.level.pc.behavior:setAim(mov)
+    end
+  end
+end
+
+function LevelScreen:movementCompare(movA, movB)
+  return movA.up == movB.up and movA.down == movB.down and movA.left == movB.left and movA.right == movB.right
+end
+
+function LevelScreen:touchStop(idx, x, y)
+  local touch = self.touches[idx]
+
+  if idx == self.movementTouchId then
+    self.level.pc.behavior:setMovement({})
+    self.movementTouchId = nil
+  elseif idx == self.aimTouchId then
+    self.level.pc.behavior:setAim({})
+    self.aimTouchId = nil
+  end
+end
+
+function LevelScreen:getAngleFromTouches(start, current)
+  local xDist = current.x - start.x
+  local yDist = start.y - current.y
+  return math.atan2(yDist, xDist) + math.pi - math.pi / 8
+end
+
+function LevelScreen:getMovementFromTouches(start, current)
+  return self:getMovementFromAngle(self:getAngleFromTouches(start, current))
+end
+
+function LevelScreen:getMovementFromAngle(angle)
+  local mov = {}
+
+  if angle > 0 and angle < math.pi / 4 then
+    mov.down = true
+    mov.left = true
+  elseif angle >= math.pi / 4 and angle < math.pi / 2 then
+    mov.down = true
+  elseif angle >= math.pi / 2 and angle < 3 * math.pi / 4 then
+    mov.down = true
+    mov.right = true
+  elseif angle >= 3 * math.pi / 4 and angle < math.pi then
+    mov.right = true
+  elseif angle >= math.pi and angle < math.pi * 1.25 then
+    mov.right = true
+    mov.up = true
+  elseif angle >= math.pi * 1.25 and angle < math.pi * 1.5 then
+    mov.up = true
+  elseif angle >= math.pi * 1.5 and angle < math.pi * 1.75 then
+    mov.up = true
+    mov.left = true
+  elseif angle >= math.pi * 1.75 or angle <= 0 then
+    mov.left = true
+  end
+
+  return mov
 end
 
 function LevelScreen:startMoveUp()

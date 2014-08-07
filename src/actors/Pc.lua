@@ -115,6 +115,24 @@ return function()
 
       end,
 
+      setMovement = function(self, mov)
+        self.movement = mov
+
+        self:updateMovementAnim()
+      end,
+
+      setAim = function(self, mov)
+        self.aim = mov
+        self:updateMovementAnim()
+
+        self:startFiring()
+
+        if not self:shouldBeFiring() then
+          self:stopFiring()
+        end
+      end,
+
+
       startMovement = function(self, dir)
         if self.movement[dir] then
           return

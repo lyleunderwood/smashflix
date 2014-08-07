@@ -2,6 +2,8 @@
 require "constants"
 MOAISim.openWindow("Smashflix", 640, 480)
 
+print("MAC ATTACK!")
+
 viewportX = 640
 viewportY = 480
 viewportRatio = viewportY / viewportX
@@ -9,14 +11,15 @@ viewportRatio = viewportY / viewportX
 viewport = MOAIViewport.new ()
 viewport:setSize(viewportX, viewportY)
 viewport:setScale(640, 480)
--- viewport:setOffset(0.5, 0)
+--viewport:setOffset(0.5, 0)
 -- MOAISim.enterFullscreenMode()
 
 MOAIUntzSystem.initialize(44100, 2000)
 
-MOAIEnvironment.setListener(0, function(key, value)
+local performResize = function(key, value)
   viewportX = MOAIEnvironment.horizontalResolution
   viewportY = MOAIEnvironment.verticalResolution
+  print("environment callback, w: "..viewportX.." h: "..viewportY)
 
   newRatio = viewportY / viewportX
 
@@ -26,7 +29,11 @@ MOAIEnvironment.setListener(0, function(key, value)
     viewportX = viewportY / viewportRatio
   end
   viewport:setSize(viewportX, viewportY)
-end)
+end
+
+MOAIEnvironment.setListener(0, performResize)
+
+performResize()
 
 backgroundLayer = MOAILayer2D.new ()
 backgroundLayer:setViewport(viewport)
@@ -56,19 +63,13 @@ levelScreen = LevelScreen:new({
   }
 })
 
+levelScreen:setWindowCoords(viewportX, viewportY)
+
 levelScreen.complete = function()
   os.exit()
 end
 
 levelScreen:start()
-
-local cb = function(...)
-  levelScreen:handleKey(...)
-end
-
-if MOAIInputMgr.device.keyboard then
-  MOAIInputMgr.device.keyboard:setCallback(cb)
-end
 
 local theme = ResourceManager:get("sounds/theme.wav", "Sound")
 theme:setLooping(true)
