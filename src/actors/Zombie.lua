@@ -135,7 +135,7 @@ return function()
         local yDist = self.target.y - y
         local dist = math.sqrt(math.pow(xDist, 2) + math.pow(yDist, 2))
 
-        return dist < 200
+        return dist < ZOMBIE_CHARGE_RANGE
       end,
 
       startMovement = function(self, dir)
