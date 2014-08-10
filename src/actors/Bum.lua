@@ -119,23 +119,31 @@ return function()
       end,
 
       setInitialMovement = function(self)
-        self:setDirectionTowardPc()
+        self:setDirectionTowardCenter()
       end,
 
-      getAngleToPc = function(self)
+      setDirectionTowardCenter = function(self)
+        self.movement = self:getMoveToPoint({x = 0, y = 0})
+      end,
+
+      getAngleToPoint = function(self, point)
         local x, y = self.rig.body:getPosition()
         self.rig.pos.x = x
         self.rig.pos.y = y
         local pos = self.rig.pos
 
-        local xDist = self.target.x - pos.x
-        local yDist = self.target.y - pos.y
+        local xDist = point.x - pos.x
+        local yDist = point.y - pos.y
 
         return math.atan2(yDist, xDist) + math.pi - math.pi / 8
       end,
 
-      getMoveToPc = function(self)
-        local angle = self:getAngleToPc()
+      getAngleToPc = function(self)
+        return self:getAngleToPoint(self.target)
+      end,
+
+      getMoveToPoint = function(self, point)
+        local angle = self:getAngleToPoint(point)
 
         local mov = {}
         if angle > 0 and angle < math.pi / 4 then
@@ -164,7 +172,7 @@ return function()
       end,
 
       setDirectionTowardPc = function(self)
-        self.movement = self:getMoveToPc()
+        self.movement = self:getMoveToPoint(self.target)
       end,
 
       changeDirection = function(self)
