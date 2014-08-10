@@ -2,11 +2,6 @@ return {
   behavior = {
     waves = {
       {
-        { time = 1, N = {"Zombie"} },
-        { time = 1, E = {"Ninja"} },
-        { time = 1, W = {"Priest"} },
-      },
-      {
         { time = 1, N = {"Bum"} },
         { time = 2, S = {"Bum"} },
         { time = 3, E = {"Bum"} },
@@ -19,15 +14,15 @@ return {
         { time = 10, S = {"Bum"} },
       },
       {
-        { time = 1, E = {"Bum"}, W = {"Bum"} },
-        { time = 2.75, E = {"Bum"}, W = {"Bum"} },
-        { time = 4.5, N = {"Bum"}, S = {"Bum"} },
-        { time = 6.25, N = {"Bum"}, S = {"Bum"} },
-        { time = 8, E = {"Bum"}, W = {"Bum"} },
-        { time = 9.75, E = {"Bum"}, W = {"Bum"} },
-        { time = 11.5, N = {"Bum"}, S = {"Bum"} },
+        { time = 1,     E = {"Bum"}, W = {"Bum"} },
+        { time = 2.75,  E = {"Bum"}, W = {"Bum"} },
+        { time = 4.5,   N = {"Bum"}, S = {"Bum"} },
+        { time = 6.25,  N = {"Bum"}, S = {"Bum"} },
+        { time = 8,     E = {"Bum"}, W = {"Bum"} },
+        { time = 9.75,  E = {"Bum"}, W = {"Bum"} },
+        { time = 11.5,  N = {"Bum"}, S = {"Bum"} },
         { time = 13.25, N = {"Bum"}, S = {"Bum"} },
-        { time = 15, E = {"Bum"}, W = {"Bum"} },
+        { time = 15,    E = {"Bum"}, W = {"Bum"} },
         { time = 16.75, E = {"Bum"}, W = {"Bum"} },
       },
       {
