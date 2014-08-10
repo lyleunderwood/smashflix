@@ -24,7 +24,7 @@ return {
 				textureRotated = true
 			},
 			{
-				name = "Zombie_Drinking.png",
+				name = "idle/Zombie_Drinking.png",
 				spriteColorRect = { x = 10, y = 3, width = 30, height = 46 },
 				uvRect = { u0 = 0.384615, v0 = 0.04, u1 = 0.673077, v1 = 0.96 },
 				spriteSourceSize = { width = 50, height = 50 },
