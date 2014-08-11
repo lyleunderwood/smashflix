@@ -122,7 +122,7 @@ return {
     success = function(self)
       self.waveEndTimer:stop()
       self.level:success({
-        nextLevel = "two"
+        nextLevel = "three"
       })
     end,
 
